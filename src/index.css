@@ -1,0 +1,279 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* 使用 Tailwind 指令，确保层级顺序正确 */
+@import 'tailwindcss';
+
+/* =========================================
+   1. 基础层 (Base Layer)
+   定义变量、重置和全局标签样式
+   ========================================= */
+@layer base {
+  :root {
+    /* FrontendMaster 深色主题变量 */
+    --bg-primary: #020617;
+    --bg-secondary: #0f172a;
+    --bg-tertiary: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --accent-primary: #22c55e;
+    --accent-hover: #16a34a;
+    --border-primary: #1e293b;
+    --border-secondary: #334155;
+    --focus-ring: #22c55e;
+    --error: #ef4444;
+    --warning: #f59e0b;
+
+    /* 深色模式声明 */
+    color-scheme: dark;
+  }
+
+  html {
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* 优化文本渲染 */
+    text-rendering: optimizeLegibility;
+    -webkit-font-feature-settings:
+      'kern' 1,
+      'liga' 1;
+    font-feature-settings:
+      'kern' 1,
+      'liga' 1;
+  }
+
+  /* 布局核心修复：使用 dvh 适应移动端，overflow 移至 body 防止双滚动条 */
+  html,
+  body,
+  #root {
+    height: 100vh; /* 兼容旧浏览器 */
+    height: 100dvh; /* 现代浏览器动态高度 */
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* 禁止整体页面滚动，交给内部区域 */
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  /* 全局滚动条样式 (同时兼容 Webkit 和 Firefox) */
+  * {
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-secondary) var(--bg-secondary);
+  }
+
+  /* Webkit (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-secondary);
+    border-radius: 6px;
+    border: 2px solid var(--bg-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+  }
+}
+
+/* =========================================
+   2. 组件层 (Components Layer)
+   将你的自定义类放在这里，Tailwind 的工具类就能覆盖它们了
+   ========================================= */
+@layer components {
+  /* 教育字体 */
+  .font-edu {
+    font-family: 'Baloo 2', cursive;
+  }
+
+  /* 等宽字体优化 */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+
+  /* 主应用容器 */
+  .main-app {
+    @apply h-full w-full flex overflow-hidden bg-[var(--bg-primary)];
+  }
+
+  /* 侧边栏 */
+  .sidebar {
+    @apply shrink-0 flex flex-col overflow-hidden bg-[var(--bg-secondary)] border-r border-[var(--border-primary)];
+  }
+
+  /* 搜索栏 */
+  .file-search {
+    @apply bg-[var(--bg-tertiary)] border-b border-[var(--border-primary)] p-3 relative shrink-0;
+  }
+
+  .file-search input {
+    @apply w-full px-3 py-2 text-sm bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-md text-[var(--text-primary)] outline-none transition-all duration-200;
+  }
+
+  .file-search input:focus {
+    border-color: var(--focus-ring);
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+  }
+
+  .file-search .clear-button {
+    @apply absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-[var(--text-muted)] cursor-pointer p-1.5 rounded transition-colors duration-200;
+  }
+
+  .file-search .clear-button:hover {
+    @apply text-[var(--text-secondary)] bg-[var(--border-primary)];
+  }
+
+  /* 文件树项 */
+  .file-tree-item {
+    @apply px-3 py-1.5 cursor-pointer rounded-md transition-all duration-200 text-[var(--text-secondary)] flex items-center gap-2;
+  }
+
+  .file-tree-item:hover {
+    @apply bg-[var(--border-primary)] text-[var(--text-primary)];
+  }
+
+  .file-tree-item.active {
+    @apply bg-[var(--accent-primary)] text-[var(--bg-primary)];
+  }
+
+  /* 编辑器标签页 */
+  .editor-tabs {
+    @apply bg-[var(--bg-secondary)] border-b border-[var(--border-primary)] flex overflow-x-auto overflow-y-hidden h-10 shrink-0 items-center;
+    scrollbar-width: none; /* 隐藏标签页滚动条 */
+  }
+
+  .editor-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-item {
+    @apply bg-transparent border-none text-[var(--text-secondary)] px-4 py-2.5 cursor-pointer border-b-2 border-transparent whitespace-nowrap flex items-center gap-2 text-sm relative transition-all duration-200 outline-none rounded-t-md mr-0.5;
+  }
+
+  .tab-item:hover {
+    @apply bg-[var(--border-primary)] text-[var(--text-primary)];
+  }
+
+  .tab-item.active {
+    @apply bg-[var(--bg-primary)] text-[var(--text-primary)] border-b-[var(--accent-primary)];
+    box-shadow: inset 0 -2px 0 0 var(--accent-primary);
+  }
+
+  /* 标签上的小圆点 */
+  .tab-item.dirty span:not(:first-child)::after {
+    content: '●';
+    @apply text-[var(--accent-primary)] ml-1.5 text-[10px];
+  }
+
+  /* 标签关闭按钮 */
+  .tab-item button {
+    @apply bg-transparent border-none text-[var(--text-muted)] p-1 rounded cursor-pointer transition-colors duration-200 flex items-center justify-center;
+  }
+
+  .tab-item button:hover {
+    @apply text-[var(--text-primary)] bg-[var(--border-primary)];
+  }
+
+  /* 工具栏 */
+  .toolbar {
+    @apply bg-[var(--bg-tertiary)] border-b border-[var(--border-primary)] p-2 flex items-center gap-2 shrink-0;
+  }
+
+  .toolbar-button {
+    @apply bg-transparent border border-[var(--border-primary)] text-[var(--text-secondary)] px-3 py-1.5 rounded-md cursor-pointer text-xs flex items-center gap-1.5 relative transition-all duration-200 outline-none;
+  }
+
+  .toolbar-button:hover {
+    @apply bg-[var(--accent-primary)] border-[var(--accent-primary)] text-[var(--bg-primary)];
+  }
+
+  .toolbar-button:active {
+    transform: translateY(1px);
+  }
+
+  /* 状态栏 */
+  .statusbar {
+    @apply bg-[var(--bg-tertiary)] text-[var(--text-secondary)] px-3 py-1.5 text-xs flex justify-between items-center border-t border-[var(--border-primary)];
+  }
+
+  /* 学习面板 */
+  .learning-panel {
+    @apply bg-[var(--bg-secondary)] border-l border-[var(--border-primary)] p-5 overflow-y-auto text-[var(--text-primary)];
+  }
+}
+
+/* =========================================
+   3. 工具层 (Utilities Layer)
+   特殊的工具类
+   ========================================= */
+@layer utilities {
+  .reduce-white-glare {
+    filter: brightness(0.9) saturate(1.1);
+  }
+
+  /* 文本截断工具增强 */
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* =========================================
+   4. 第三方库覆盖 (慎用 !important)
+   ========================================= */
+
+/* 终端容器 */
+.terminal-container {
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-primary);
+}
+
+/* Monaco Editor 微调
+   注意：尽量不要用 !important 覆盖背景色，会影响 Diff View 和 Search Highlight
+   这里只调整边距颜色以匹配主题
+*/
+.monaco-editor .margin {
+  background-color: var(--bg-secondary);
+}
+
+/* 动画定义 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}

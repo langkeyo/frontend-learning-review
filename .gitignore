@@ -1,0 +1,11 @@
+node_modules
+interactive-web-demo
+my-awesome-skill
+*PROGRESS.md
+Product-Spec.md
+PROGRESS_REPORT.md
+AGENTS.md
+.opencode
+dist
+.agents
+*.log
