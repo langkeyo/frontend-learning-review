@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript变量示例</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>JavaScript变量学习</h1>
+        <nav>
+            <ul>
+                <li><a href="#declaration">变量声明</a></li>
+                <li><a href="#types">数据类型</a></li>
+                <li><a href="#scope">作用域</a></li>
+                <li><a href="#hoisting">提升</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="declaration">
+            <h2>变量声明</h2>
+            <p>JavaScript中可以使用三种方式声明变量：</p>
+            <pre>// var声明（旧方式）
+var name = "张三";
+
+// let声明（ES6+）
+let age = 25;
+
+// const声明（ES6+，不可变）
+const PI = 3.14159;</pre>
+            <div class="example-output">
+                <p>变量声明示例输出：</p>
+                <div id="declaration-output"></div>
+            </div>
+        </section>
+
+        <section id="types">
+            <h2>数据类型</h2>
+            <p>JavaScript有七种基本数据类型：</p>
+            <ul>
+                <li>String（字符串）</li>
+                <li>Number（数字）</li>
+                <li>Boolean（布尔值）</li>
+                <li>Undefined（未定义）</li>
+                <li>Null（空值）</li>
+                <li>Symbol（符号）</li>
+                <li>BigInt（大整数）</li>
+            </ul>
+            <pre>// 类型示例
+let str = "Hello";
+let num = 42;
+let bool = true;
+let undef = undefined;
+let nul = null;
+let sym = Symbol("unique");
+let bigInt = 123456789012345678901234567890n;</pre>
+            <div class="example-output">
+                <p>类型检查示例：</p>
+                <div id="type-output"></div>
+            </div>
+        </section>
+
+        <section id="scope">
+            <h2>作用域</h2>
+            <p>JavaScript有三种作用域：</p>
+            <ul>
+                <li>全局作用域</li>
+                <li>函数作用域</li>
+                <li>块级作用域（let和const）</li>
+            </ul>
+            <pre>// 全局作用域
+let globalVar = "全局变量";
+
+function testScope() {
+    // 函数作用域
+    let localVar = "局部变量";
+    console.log(globalVar); // 可访问
+    console.log(localVar);  // 可访问
+
+    if (true) {
+        // 块级作用域
+        let blockVar = "块级变量";
+        console.log(blockVar); // 可访问
+    }
+    // console.log(blockVar); // 报错：blockVar未定义
+}
+
+testScope();
+// console.log(localVar); // 报错：localVar未定义</pre>
+            <div class="example-output">
+                <p>作用域示例输出：</p>
+                <div id="scope-output"></div>
+            </div>
+        </section>
+
+        <section id="hoisting">
+            <h2>变量提升</h2>
+            <p>JavaScript中的变量声明会被提升到作用域顶部：</p>
+            <pre>// 变量提升示例
+console.log(hoistedVar); // 输出: undefined
+var hoistedVar = "已提升的变量";
+
+// 函数声明也会被提升
+hoistedFunction(); // 可以正常调用
+
+function hoistedFunction() {
+    console.log("函数已被提升");
+}
+
+// let和const不会提升（暂时性死区）
+// console.log(notHoisted); // 报错：Cannot access 'notHoisted' before initialization
+// let notHoisted = "不会被提升";</pre>
+            <div class="example-output">
+                <p>提升示例输出：</p>
+                <div id="hoisting-output"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>JavaScript变量是编程的基础，理解它们对于掌握JavaScript至关重要</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>语义化标签示例</title>
+</head>
+<body>
+<header>
+<nav>
+<ul>
+<li><a href="#home">首页</a></li>
+<li><a href="#articles">文章</a></li>
+<li><a href="#about">关于</a></li>
+</ul>
+</nav>
+</header>
+<main>
+<article>
+<h1>理解 HTML 语义化</h1>
+<p>语义化标签让页面结构更清晰...</p>
+</article>
+<aside>
+<h3>热门文章</h3>
+<ul>
+<li><a href="#">CSS Grid 入门</a></li>
+<li><a href="#">Flexbox 布局指南</a></li>
+</ul>
+</aside>
+</main>
+<footer>
+<p>&copy; 2024 FrontendMaster</p>
+</footer>
+</body>
+</html>

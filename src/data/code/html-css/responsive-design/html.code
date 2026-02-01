@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>响应式设计示例</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>响应式网页设计</h1>
+        <nav>
+            <button class="menu-toggle">菜单</button>
+            <ul class="nav-menu">
+                <li><a href="#media-queries">媒体查询</a></li>
+                <li><a href="#flexbox">Flexbox布局</a></li>
+                <li><a href="#grid">Grid布局</a></li>
+                <li><a href="#images">响应式图片</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="media-queries">
+            <h2>媒体查询</h2>
+            <p>媒体查询允许根据设备特性应用不同的样式：</p>
+            <pre>@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .nav-menu {
+    display: none;
+  }
+}</pre>
+        </section>
+
+        <section id="flexbox">
+            <h2>Flexbox布局</h2>
+            <div class="flex-container">
+                <div class="flex-item">项目1</div>
+                <div class="flex-item">项目2</div>
+                <div class="flex-item">项目3</div>
+            </div>
+            <pre>.flex-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.flex-item {
+  flex: 1;
+  margin: 10px;
+  padding: 20px;
+  background: #e0e0e0;
+}</pre>
+        </section>
+
+        <section id="grid">
+            <h2>Grid布局</h2>
+            <div class="grid-container">
+                <div class="grid-item">网格项目1</div>
+                <div class="grid-item">网格项目2</div>
+                <div class="grid-item">网格项目3</div>
+                <div class="grid-item">网格项目4</div>
+            </div>
+            <pre>.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}</pre>
+        </section>
+
+        <section id="images">
+            <h2>响应式图片</h2>
+            <p>使用srcset和sizes属性提供不同分辨率的图片：</p>
+            <img src="small.jpg"
+                 srcset="small.jpg 480w, medium.jpg 800w, large.jpg 1200w"
+                 sizes="(max-width: 600px) 480px, (max-width: 1000px) 800px, 1200px"
+                 alt="响应式图片示例">
+            <pre>&lt;img src="small.jpg"
+     srcset="small.jpg 480w, medium.jpg 800w, large.jpg 1200w"
+     sizes="(max-width: 600px) 480px, (max-width: 1000px) 800px, 1200px"
+     alt="响应式图片"&gt;</pre>
+        </section>
+    </main>
+
+    <footer>
+        <p>响应式设计让网站在各种设备上都能良好显示</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

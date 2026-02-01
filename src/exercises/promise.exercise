@@ -1,0 +1,10 @@
+{
+  "title": "Promise练习",
+  "description": "使用Promise和async/await重写以下回调地狱代码，使其更加清晰和易读。",
+  "starterCode": {
+    "html": "<div id=\"app\"></div>",
+    "css": "",
+    "js": "function getUser(userId, callback) {\n  setTimeout(() => {\n    console.log('获取用户信息');\n    callback({ id: userId, name: 'Alice' });\n  }, 1000);\n}\n\nfunction getPosts(userId, callback) {\n  setTimeout(() => {\n    console.log('获取用户帖子');\n    callback([{ id: 1, title: 'Post 1' }, { id: 2, title: 'Post 2' }]);\n  }, 1000);\n}\n\nfunction getComments(postId, callback) {\n  setTimeout(() => {\n    console.log('获取帖子评论');\n    callback([{ id: 1, text: 'Good post!' }]);\n  }, 1000);\n}\n\n// 回调地狱\ngetUser(1, (user) => {\n  getPosts(user.id, (posts) => {\n    getComments(posts[0].id, (comments) => {\n      console.log('最终结果:', { user, posts, comments });\n    });\n  });\n});"
+  },
+  "expectedOutput": "使用Promise和async/await重写后的代码应该：\n1. 使用Promise替代回调函数\n2. 使用async/await使代码更加线性\n3. 错误处理更加清晰\n4. 代码结构更加清晰和易读\n\nJavaScript应该使用：\n- Promise\n- async/await\n- try/catch错误处理\n- 可能使用Promise.all进行并发请求\n\nHTML和CSS可以是空的，因为这是一个纯JavaScript练习。"
+}

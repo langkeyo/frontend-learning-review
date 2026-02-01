@@ -1,0 +1,90 @@
+// ==================== 基础 GET 请求 ====================
+console.log('--- 基础 GET 请求 ---')
+// 模拟 fetch 请求（实际使用时替换为真实 API）
+const mockFetch = async (url: string, options?: RequestInit) => {
+console.log(\`请求: \${options?.method || 'GET'} \${url}\`)
+// 模拟延迟
+await new Promise(resolve => setTimeout(resolve, 500))
+// 模拟响应
+if (url === '/api/users') {
+return {
+ok: true,
+status: 200,
+json: () => Promise.resolve([
+{ id: 1, name: 'Alice' },
+{ id: 2, name: 'Bob' },
+{ id: 3, name: 'Charlie' }
+])
+} as Response
+}
+return {
+ok: false,
+status: 404,
+json: () => Promise.resolve({ error: 'Not found' })
+} as Response
+}
+// 1. GET 请求
+mockFetch('/api/users')
+.then(response => {
+if (response.ok) {
+return response.json()
+}
+throw new Error('请求失败')
+})
+.then(users => console.log('用户列表:', users))
+.catch(error => console.error('错误:', error))
+// ==================== POST 请求 ====================
+console.log('\\n--- POST 请求 ---')
+mockFetch('/api/users', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ name: 'Tom', age: 25 })
+})
+.then(response => response.json())
+.then(data => console.log('创建用户:', data))
+.catch(error => console.error('错误:', error))
+// ==================== 带认证的请求 ====================
+console.log('\\n--- 带认证的请求 ---')
+mockFetch('/api/profile', {
+headers: {
+'Content-Type': 'application/json',
+'Authorization': 'Bearer token123'
+}
+})
+.then(response => response.json())
+.then(data => console.log('用户资料:', data))
+.catch(error => console.error('错误:', error))
+// ==================== 完整的封装 ====================
+console.log('\\n--- 完整的 fetch 封装 ---')
+class ApiClient {
+private baseUrl = 'https://api.example.com'
+async get(url: string) {
+const response = await mockFetch(this.baseUrl + url)
+return this.handleResponse(response)
+}
+async post(url: string, data: any) {
+const response = await mockFetch(this.baseUrl + url, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify(data)
+})
+return this.handleResponse(response)
+}
+async delete(url: string) {
+const response = await mockFetch(this.baseUrl + url, {
+method: 'DELETE'
+})
+return this.handleResponse(response)
+}
+private async handleResponse(response: Response) {
+if (!response.ok) {
+throw new Error(\`请求失败: \${response.status}\`)
+}
+return response.json()
+}
+}
+const api = new ApiClient()
+// 使用 API 客户端
+api.get('/users').then(users => console.log('获取用户:', users))
+api.post('/users', { name: 'David', age: 30 }).then(data => console.log('创建用户:', data))`
+},

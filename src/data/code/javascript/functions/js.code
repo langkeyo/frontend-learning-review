@@ -1,0 +1,254 @@
+// JavaScript函数示例
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 函数声明示例
+    const declarationOutput = document.getElementById('declaration-output');
+    if (declarationOutput) {
+        function greet(name) {
+            return `你好, ${name}!`;
+        }
+
+        const add = function(a, b) {
+            return a + b;
+        };
+
+        (function() {
+            console.log("立即执行函数");
+        })();
+
+        declarationOutput.innerHTML = `
+            <p>函数声明结果：</p>
+            <p>greet("张三"): ${greet("张三")}</p>
+            <p>add(5, 3): ${add(5, 3)}</p>
+            <p>函数已执行</p>
+        `;
+    }
+
+    // 箭头函数示例
+    const arrowOutput = document.getElementById('arrow-output');
+    if (arrowOutput) {
+        const multiply = (a, b) => a * b;
+        const complexCalc = (a, b) => {
+            const result = a * b;
+            return result + 10;
+        };
+        const sayHello = () => "Hello!";
+        const square = x => x * x;
+
+        arrowOutput.innerHTML = `
+            <p>箭头函数结果：</p>
+            <p>multiply(4, 5): ${multiply(4, 5)}</p>
+            <p>complexCalc(3, 4): ${complexCalc(3, 4)}</p>
+            <p>sayHello(): ${sayHello()}</p>
+            <p>square(7): ${square(7)}</p>
+        `;
+    }
+
+    // 参数处理示例
+    const parametersOutput = document.getElementById('parameters-output');
+    if (parametersOutput) {
+        function greet(name = "访客") {
+            return `你好, ${name}!`;
+        }
+
+        function sum(...numbers) {
+            return numbers.reduce((total, num) => total + num, 0);
+        }
+
+        function displayUser({ name, age, city }) {
+            return `${name}，${age}岁，来自${city}`;
+        }
+
+        function safeDivide(a, b) {
+            if (b === 0) {
+                throw new Error("除数不能为零");
+            }
+            return a / b;
+        }
+
+        try {
+            const result = safeDivide(10, 2);
+            parametersOutput.innerHTML = `
+                <p>参数处理结果：</p>
+                <p>greet(): ${greet()}</p>
+                <p>greet("李四"): ${greet("李四")}</p>
+                <p>sum(1, 2, 3, 4): ${sum(1, 2, 3, 4)}</p>
+                <p>displayUser({name: "王五", age: 30, city: "上海"}): ${displayUser({name: "王五", age: 30, city: "上海"})}</p>
+                <p>safeDivide(10, 2): ${result}</p>
+            `;
+        } catch (error) {
+            parametersOutput.innerHTML = `
+                <p>参数处理结果：</p>
+                <p>greet(): ${greet()}</p>
+                <p>greet("李四"): ${greet("李四")}</p>
+                <p>sum(1, 2, 3, 4): ${sum(1, 2, 3, 4)}</p>
+                <p>displayUser({name: "王五", age: 30, city: "上海"}): ${displayUser({name: "王五", age: 30, city: "上海"})}</p>
+                <p>safeDivide(10, 2): ${error.message}</p>
+            `;
+        }
+    }
+
+    // 闭包示例
+    const closureOutput = document.getElementById('closure-output');
+    if (closureOutput) {
+        function createCounter() {
+            let count = 0;
+            return function() {
+                count++;
+                return count;
+            };
+        }
+
+        const counter = createCounter();
+        const result1 = counter();
+        const result2 = counter();
+
+        closureOutput.innerHTML = `
+            <p>闭包结果：</p>
+            <p>第一次调用: ${result1}</p>
+            <p>第二次调用: ${result2}</p>
+            <p>状态被保留</p>
+        `;
+    }
+
+    // 高阶函数示例
+    const higherOrderOutput = document.getElementById('higher-order-output');
+    if (higherOrderOutput) {
+        const numbers = [1, 2, 3, 4, 5];
+        const doubled = numbers.map(num => num * 2);
+        const evenNumbers = numbers.filter(num => num % 2 === 0);
+        const sum = numbers.reduce((total, num) => total + num, 0);
+
+        const compose = (f, g) => x => f(g(x));
+        const addOne = x => x + 1;
+        const double = x => x * 2;
+        const addOneThenDouble = compose(double, addOne);
+
+        higherOrderOutput.innerHTML = `
+            <p>高阶函数结果：</p>
+            <p>map结果: [${doubled.join(', ')}]</p>
+            <p>filter结果: [${evenNumbers.join(', ')}]</p>
+            <p>reduce结果: ${sum}</p>
+            <p>compose(addOne, double)(5): ${addOneThenDouble(5)}</p>
+        `;
+    }
+});
+
+// 函数工具函数
+export function functionDeclaration() {
+    // 函数声明
+    function greet(name) {
+        return `你好, ${name}!`;
+    }
+
+    // 函数表达式
+    const add = function(a, b) {
+        return a + b;
+    };
+
+    // IIFE
+    (function() {
+        console.log("立即执行");
+    })();
+
+    return {
+        greet,
+        add
+    };
+}
+
+// 箭头函数工具
+export function arrowFunctions() {
+    const multiply = (a, b) => a * b;
+    const complexCalc = (a, b) => {
+        const result = a * b;
+        return result + 10;
+    };
+    const sayHello = () => "Hello!";
+    const square = x => x * x;
+
+    return {
+        multiply,
+        complexCalc,
+        sayHello,
+        square
+    };
+}
+
+// 参数处理工具
+export function parameterHandling() {
+    function greet(name = "访客") {
+        return `你好, ${name}!`;
+    }
+
+    function sum(...numbers) {
+        return numbers.reduce((total, num) => total + num, 0);
+    }
+
+    function displayUser({ name, age, city }) {
+        return `${name}，${age}岁，来自${city}`;
+    }
+
+    function safeDivide(a, b) {
+        if (b === 0) {
+            throw new Error("除数不能为零");
+        }
+        return a / b;
+    }
+
+    return {
+        greet,
+        sum,
+        displayUser,
+        safeDivide
+    };
+}
+
+// 闭包工具
+export function closures() {
+    function createCounter() {
+        let count = 0;
+        return function() {
+            count++;
+            return count;
+        };
+    }
+
+    const counter = createCounter();
+    const result1 = counter();
+    const result2 = counter();
+
+    return {
+        counter,
+        result1,
+        result2
+    };
+}
+
+// 高阶函数工具
+export function higherOrderFunctions() {
+    const numbers = [1, 2, 3, 4, 5];
+    const doubled = numbers.map(num => num * 2);
+    const evenNumbers = numbers.filter(num => num % 2 === 0);
+    const sum = numbers.reduce((total, num) => total + num, 0);
+
+    const compose = (f, g) => x => f(g(x));
+    const addOne = x => x + 1;
+    const double = x => x * 2;
+    const addOneThenDouble = compose(double, addOne);
+
+    return {
+        doubled,
+        evenNumbers,
+        sum,
+        compose,
+        addOneThenDouble
+    };
+}
+
+// 示例使用
+console.log('函数声明:', functionDeclaration());
+console.log('箭头函数:', arrowFunctions());
+console.log('参数处理:', parameterHandling());
+console.log('闭包:', closures());
+console.log('高阶函数:', higherOrderFunctions());

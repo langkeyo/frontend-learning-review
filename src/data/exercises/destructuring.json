@@ -1,0 +1,11 @@
+{
+  "description": "使用解构赋值从对象中提取 name 和 age 属性，并返回格式化的问候语。",
+  "starterCodeJs": "// 练习：解构赋值提取对象属性\n\nconst user = {\n  name: '张三',\n  age: 25,\n  city: '北京'\n}\n\n// TODO: 使用解构赋值提取 name 和 age\n",
+  "starterCodeHtml": "",
+  "starterCodeCss": "",
+  "expectedOutput": "你好，我是张三，今年 25 岁",
+  "hint": "使用 const { name, age } = user; 来解构对象。",
+  "solutionJs": "// 练习：解构赋值提取对象属性\n\nconst user = {\n  name: '张三',\n  age: 25,\n  city: '北京'\n}\n\nconst { name, age } = user\n\nconsole.log(`你好，我是${name}，今年${age}岁`)",
+  "solutionHtml": "",
+  "solutionCss": ""
+}

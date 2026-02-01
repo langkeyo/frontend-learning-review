@@ -1,0 +1,9 @@
+{
+  "description": "创建一个淡入动画效果，让元素从透明到不透明平滑过渡。",
+  "starterCodeCss": ".box {\n  width: 100px;\n  height: 100px;\n  background: #3b82f6;\n  /* TODO: 添加淡入动画 */\n}",
+  "starterCodeHtml": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>动画练习</title>\n  <style>\n    .box {\n      width: 100px;\n      height: 100px;\n      background: #3b82f6;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"box\">方块</div>\n</body>\n</html>",
+  "expectedOutput": "方块淡入显示",
+  "hint": "使用 @keyframes 定义关键帧，使用 animation 属性应用动画。opacity 从 0 过渡到 1。",
+  "solutionCss": ".box {\n  width: 100px;\n  height: 100px;\n  background: #3b82f6;\n  animation: fadeIn 0.5s ease-in;\n}\n\n@keyframes fadeIn {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}",
+  "solutionHtml": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>动画练习</title>\n  <style>\n    .box {\n      width: 100px;\n      height: 100px;\n      background: #3b82f6;\n      animation: fadeIn 0.5s ease-in;\n    }\n\n    @keyframes fadeIn {\n      from { opacity: 0; }\n      to { opacity: 1; }\n    }\n  </style>\n</head>\n<body>\n  <div class=\"box\">方块</div>\n</body>\n</html>"
+}

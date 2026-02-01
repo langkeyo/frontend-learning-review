@@ -1,0 +1,170 @@
+// JavaScript变量示例
+
+// 变量声明示例
+document.addEventListener('DOMContentLoaded', () => {
+    // 变量声明输出
+    const declarationOutput = document.getElementById('declaration-output');
+    if (declarationOutput) {
+        declarationOutput.innerHTML = `
+            <p>变量声明结果：</p>
+            <p>name: "张三"</p>
+            <p>age: 25</p>
+            <p>PI: 3.14159</p>
+        `;
+    }
+
+    // 数据类型示例
+    const typeOutput = document.getElementById('type-output');
+    if (typeOutput) {
+        const str = "Hello";
+        const num = 42;
+        const bool = true;
+        const undef = undefined;
+        const nul = null;
+        const sym = Symbol("unique");
+        const bigInt = 123456789012345678901234567890n;
+
+        typeOutput.innerHTML = `
+            <p>数据类型检查：</p>
+            <p>typeof str: ${typeof str}</p>
+            <p>typeof num: ${typeof num}</p>
+            <p>typeof bool: ${typeof bool}</p>
+            <p>typeof undef: ${typeof undef}</p>
+            <p>typeof nul: ${typeof nul}</p>
+            <p>typeof sym: ${typeof sym}</p>
+            <p>typeof bigInt: ${typeof bigInt}</p>
+        `;
+    }
+
+    // 作用域示例
+    const scopeOutput = document.getElementById('scope-output');
+    if (scopeOutput) {
+        let globalVar = "全局变量";
+
+        function testScope() {
+            let localVar = "局部变量";
+            let blockVar = "块级变量";
+
+            scopeOutput.innerHTML = `
+                <p>函数内部可访问：</p>
+                <p>globalVar: ${globalVar}</p>
+                <p>localVar: ${localVar}</p>
+                <p>blockVar: ${blockVar}</p>
+            `;
+        }
+
+        testScope();
+    }
+
+    // 变量提升示例
+    const hoistingOutput = document.getElementById('hoisting-output');
+    if (hoistingOutput) {
+        // 变量提升
+        console.log('变量提升示例：');
+        var hoistedVar = "已提升的变量";
+        console.log('hoistedVar:', hoistedVar);
+
+        // 函数提升
+        function hoistedFunction() {
+            console.log("函数已被提升");
+        }
+        hoistedFunction();
+
+        hoistingOutput.innerHTML = `
+            <p>提升结果：</p>
+            <p>hoistedVar: ${hoistedVar}</p>
+            <p>函数已成功调用</p>
+        `;
+    }
+});
+
+// 变量工具函数
+export function declareVariables() {
+    // 使用var声明（函数作用域）
+    var name = "张三";
+    var age = 25;
+
+    // 使用let声明（块级作用域）
+    let city = "北京";
+    let isStudent = true;
+
+    // 使用const声明（不可变）
+    const PI = 3.14159;
+    const MAX_ATTEMPTS = 3;
+
+    return {
+        name,
+        age,
+        city,
+        isStudent,
+        PI,
+        MAX_ATTEMPTS
+    };
+}
+
+// 类型检查工具函数
+export function checkTypes() {
+    const types = {
+        string: "Hello World",
+        number: 42,
+        boolean: true,
+        undefined: undefined,
+        null: null,
+        symbol: Symbol("id"),
+        bigInt: 9007199254740991n
+    };
+
+    const results = {};
+    for (const [key, value] of Object.entries(types)) {
+        results[key] = typeof value;
+    }
+
+    return results;
+}
+
+// 作用域演示函数
+export function demonstrateScope() {
+    let globalVar = "全局变量";
+
+    function outerFunction() {
+        let outerVar = "外部变量";
+
+        function innerFunction() {
+            let innerVar = "内部变量";
+            return {
+                global: globalVar,
+                outer: outerVar,
+                inner: innerVar
+            };
+        }
+
+        return innerFunction();
+    }
+
+    return outerFunction();
+}
+
+// 变量提升演示
+export function demonstrateHoisting() {
+    // var声明会被提升
+    console.log('hoistedVar:', hoistedVar); // 输出: undefined
+    var hoistedVar = "已提升的变量";
+
+    // 函数声明也会被提升
+    hoistedFunction(); // 可以正常调用
+
+    function hoistedFunction() {
+        console.log("函数已被提升");
+    }
+
+    return {
+        hoistedVar,
+        hoistedFunction: typeof hoistedFunction
+    };
+}
+
+// 示例使用
+console.log('变量声明结果:', declareVariables());
+console.log('类型检查结果:', checkTypes());
+console.log('作用域演示:', demonstrateScope());
+console.log('变量提升演示:', demonstrateHoisting());

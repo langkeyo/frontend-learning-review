@@ -1,0 +1,81 @@
+// ==================== Promise 基础 ====================
+console.log('--- Promise 基础 ---')
+// 创建一个 Promise
+const myPromise = new Promise((resolve, reject) => {
+setTimeout(() => {
+resolve('Promise 已完成')
+}, 1000)
+})
+myPromise.then(result => console.log(result))
+// ==================== Promise 链式调用 ====================
+console.log('\\n--- 链式调用 ---')
+function fetchUser() {
+return new Promise(resolve => {
+setTimeout(() => {
+resolve({ id: 1, name: 'Tom' })
+}, 500)
+})
+}
+function fetchPosts(userId) {
+return new Promise(resolve => {
+setTimeout(() => {
+resolve([
+{ id: 1, title: 'Post 1', userId },
+{ id: 2, title: 'Post 2', userId }
+])
+}, 300)
+})
+}
+fetchUser()
+.then(user => {
+console.log('用户:', user)
+return fetchPosts(user.id)
+})
+.then(posts => {
+console.log('帖子:', posts)
+})
+.catch(error => {
+console.error('错误:', error)
+})
+// ==================== async/await ====================
+console.log('\\n--- async/await ---')
+async function loadData() {
+try {
+console.log('开始加载...')
+const user = await new Promise(resolve => {
+setTimeout(() => resolve({ name: 'Alice' }), 300)
+})
+console.log('用户加载完成:', user)
+const data = await new Promise(resolve => {
+setTimeout(() => resolve({ posts: ['Post 1', 'Post 2'] }), 300)
+})
+console.log('数据加载完成:', data)
+} catch (error) {
+console.error('加载失败:', error)
+}
+}
+loadData()
+// ==================== Promise.all ====================
+console.log('\\n--- Promise.all 并行请求 ---')
+const promise1 = new Promise(resolve => {
+setTimeout(() => resolve('任务1完成'), 500)
+})
+const promise2 = new Promise(resolve => {
+setTimeout(() => resolve('任务2完成'), 300)
+})
+const promise3 = new Promise(resolve => {
+setTimeout(() => resolve('任务3完成'), 400)
+})
+Promise.all([promise1, promise2, promise3])
+.then(results => console.log('全部完成:', results))
+// ==================== Promise.race ====================
+console.log('\\n--- Promise.race 赛跑 ---')
+const fastPromise = new Promise(resolve => {
+setTimeout(() => resolve('快'), 100)
+})
+const slowPromise = new Promise(resolve => {
+setTimeout(() => resolve('慢'), 500)
+})
+Promise.race([fastPromise, slowPromise])
+.then(winner => console.log('获胜者:', winner))`
+},

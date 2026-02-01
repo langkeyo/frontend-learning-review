@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch API示例</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Fetch API网络请求</h1>
+        <nav>
+            <ul>
+                <li><a href="#basic-fetch">基本Fetch</a></li>
+                <li><a href="#get-request">GET请求</a></li>
+                <li><a href="#post-request">POST请求</a></li>
+                <li><a href="#error-handling">错误处理</a></li>
+                <li><a href="#async-await">Async/Await</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="basic-fetch">
+            <h2>基本Fetch使用</h2>
+            <p>Fetch API是现代浏览器提供的网络请求API：</p>
+            <pre>// 基本Fetch请求
+fetch('https://api.example.com/data')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('请求失败:', error));</pre>
+            <div class="example-output">
+                <p>基本Fetch示例输出：</p>
+                <div id="basic-output"></div>
+            </div>
+        </section>
+
+        <section id="get-request">
+            <h2>GET请求</h2>
+            <p>使用Fetch发送GET请求：</p>
+            <pre>// GET请求
+fetch('https://api.example.com/users?id=123', {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error('网络响应不正常');
+    }
+    return response.json();
+})
+.then(data => console.log(data))
+.catch(error => console.error('GET请求失败:', error));</pre>
+            <div class="example-output">
+                <p>GET请求示例输出：</p>
+                <div id="get-output"></div>
+            </div>
+        </section>
+
+        <section id="post-request">
+            <h2>POST请求</h2>
+            <p>使用Fetch发送POST请求：</p>
+            <pre>// POST请求
+const userData = {
+    name: "张三",
+    email: "zhangsan@example.com"
+};
+
+fetch('https://api.example.com/users', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(userData)
+})
+.then(response => response.json())
+.then(data => console.log('创建成功:', data))
+.catch(error => console.error('POST请求失败:', error));</pre>
+            <div class="example-output">
+                <p>POST请求示例输出：</p>
+                <div id="post-output"></div>
+            </div>
+        </section>
+
+        <section id="error-handling">
+            <h2>错误处理</h2>
+            <p>Fetch请求的错误处理：</p>
+            <pre>// 错误处理
+fetch('https://api.example.com/nonexistent')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP错误! 状态: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => console.log(data))
+    .catch(error => {
+        console.error('捕获的错误:', error.message);
+        // 处理不同类型的错误
+        if (error.name === 'TypeError') {
+            console.error('可能是网络问题');
+        }
+    });</pre>
+            <div class="example-output">
+                <p>错误处理示例输出：</p>
+                <div id="error-output"></div>
+            </div>
+        </section>
+
+        <section id="async-await">
+            <h2>Async/Await</h2>
+            <p>使用Async/Await简化异步代码：</p>
+            <pre>// Async/Await示例
+async function fetchData() {
+    try {
+        const response = await fetch('https://api.example.com/data');
+        if (!response.ok) {
+            throw new Error('网络响应不正常');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('获取数据失败:', error);
+        throw error;
+    }
+}
+
+// 使用示例
+async function main() {
+    try {
+        const data = await fetchData();
+        console.log('获取的数据:', data);
+    } catch (error) {
+        console.error('主函数中的错误:', error);
+    }
+}
+
+main();</pre>
+            <div class="example-output">
+                <p>Async/Await示例输出：</p>
+                <div id="async-output"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Fetch API是现代JavaScript进行网络请求的标准方式</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

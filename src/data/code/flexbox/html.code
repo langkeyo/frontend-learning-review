@@ -1,0 +1,35 @@
+<div class="container">
+<!-- 场景1: 导航栏居中 -->
+<div class="navbar">
+<div class="logo">Logo</div>
+<nav>
+<a href="#">首页</a>
+<a href="#">产品</a>
+<a href="#">关于</a>
+</nav>
+</div>
+<!-- 场景2: 卡片等高布局 -->
+<div class="card-container">
+<div class="card">
+<h3>卡片 1</h3>
+<p>这是一段较短的描述文本。</p>
+</div>
+<div class="card">
+<h3>卡片 2</h3>
+<p>这是一段较长的描述文本，用于演示 Flexbox 的等高特性。即使内容长度不同，卡片高度也会保持一致。</p>
+</div>
+<div class="card">
+<h3>卡片 3</h3>
+<p>中等长度的描述。</p>
+</div>
+</div>
+<!-- 场景3: 水平垂直居中 -->
+<div class="center-box">
+<div class="box">居中元素</div>
+</div>
+<!-- 场景4: 左右布局 -->
+<div class="split-layout">
+<aside>侧边栏</aside>
+<main>主要内容区域</main>
+</div>
+</div>

@@ -1,395 +1,589 @@
-import React, {
-  useEffect,
-  useCallback,
-  useState,
-  memo,
-  lazy,
-  Suspense
-} from 'react'
-import { useAppStore } from '@/stores/useAppStore'
-import { fileSystemService } from '@/services/fileSystemService'
-import Toolbar from '@/components/Toolbar'
-import StatusBar from '@/components/StatusBar'
+import React, { useState, lazy, Suspense, useEffect, useMemo, useRef } from 'react'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import FileEditor from '@/components/FileEditor'
+import CodeExecutor from '@/components/CodeExecutor'
+import type { ExecutionResult } from '@/components/CodeExecutor'
+import type { FileData } from '@/components/FileEditor'
+import { CATEGORIES } from '@/data'
+import { getTopicCode, getTopicExercise } from '@/data/knowledgeProvider'
+import { markTopicCompleted, isTopicCompleted } from '@/hooks/useProgress'
 
-// 动态导入组件以优化bundle大小 (bundle-dynamic-imports规则)
-const FileExplorer = lazy(() => import('@/components/FileExplorer'))
-const Editor = lazy(() => import('@/components/Editor'))
-const Terminal = lazy(() => import('@/components/Terminal'))
-const LearningPanel = lazy(() => import('@/components/LearningPanel'))
-const SettingsPanel = lazy(() => import('@/components/SettingsPanel'))
+// 动态导入组件
+const KnowledgeTree = lazy(() => import('@/components/KnowledgeTree'))
+const DocumentViewer = lazy(() => import('@/components/DocumentViewer'))
 
-// 记忆化的文件图标组件
-const FileIcon = memo(({ language }: { language: string }) => {
-  const iconMap: Record<string, string> = {
-    javascript: 'JS',
-    typescript: 'TS',
-    html: '<>',
-    css: '#',
-    json: '{}',
-    markdown: 'MD',
-    plaintext: 'txt'
-  }
+// 获取所有知识点数量
+const getTotalTopicCount = (): number => {
+  let count = 0
+  CATEGORIES.forEach(cat => {
+    count += cat.children.length
+  })
+  return count
+}
 
-  return <span>{iconMap[language] || '📄'}</span>
-})
-
-FileIcon.displayName = 'FileIcon'
-
-// 记忆化的编辑器标签页组件
-const EditorTab = memo(
-  ({
-    file,
-    isActive,
-    onTabClick,
-    onTabClose
-  }: {
-    file: {
-      id: string
-      name: string
-      language: string
-      isDirty: boolean
-    }
-    isActive: boolean
-    onTabClick: (fileId: string) => void
-    onTabClose: (fileId: string, e: React.MouseEvent) => void
-  }) => {
-    return (
-      <button
-        className={`
-        flex items-center gap-2 px-3 py-2 text-sm border-r border-editor-border min-w-[120px] max-w-[200px]
-        ${
-          isActive
-            ? 'bg-editor-bg text-white border-t-2 border-t-blue-500'
-            : 'bg-editor-sidebar text-gray-400 hover:bg-gray-800'
-        }
-      `}
-        onClick={() => onTabClick(file.id)}
-      >
-        <FileIcon language={file.language} />
-        <span className="truncate flex-1 text-left">{file.name}</span>
-        {file.isDirty && (
-          <span className="w-2 h-2 rounded-full bg-yellow-500 mr-1" />
-        )}
-        <span
-          className="hover:bg-gray-700 rounded p-0.5 cursor-pointer"
-          onClick={(e) => onTabClose(file.id, e)}
-        >
-          ×
-        </span>
-      </button>
-    )
-  }
-)
-
-EditorTab.displayName = 'EditorTab'
-
-// 记忆化的空状态组件
-const EmptyState = memo(() => {
-  return (
-    <div className="absolute inset-0 flex items-center justify-center text-gray-500 select-none">
-      <div className="text-center">
-        <div className="text-4xl mb-4 opacity-50">⚛️</div>
-        <div className="text-xl font-medium mb-2">FrontendMaster</div>
-        <div className="text-sm opacity-70">
-          使用 <span className="keyboard-shortcut">Ctrl+P</span> 快速搜索文件
-        </div>
-      </div>
-    </div>
-  )
-})
-
-EmptyState.displayName = 'EmptyState'
+const TOTAL_TOPICS = getTotalTopicCount()
 
 /**
  * 主应用组件
  */
 const App: React.FC = () => {
-  // 获取store实例
-  const store = useAppStore() as any
+  const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null)
+  const [activeFileId, setActiveFileId] = useState<string>('js')
+  const [files, setFiles] = useState<FileData[]>([])
+  const [executionResult, setExecutionResult] = useState<ExecutionResult | null>(null)
+  const [isDarkMode, setIsDarkMode] = useState(true)
+  const [completedTopics, setCompletedTopics] = useState<Set<string>>(new Set())
+  const hasReceivedMessageRef = useRef(false)  // 跟踪是否已收到消息
 
-  // 使用解构赋值获取store状态和方法
-  const {
-    setFileSystem,
-    setLoading,
-    setError,
-    clearError,
-    setActiveFile,
-    closeFile,
-    editor,
-    terminal,
-    learningPath,
-    sidebarWidth,
-    isDarkMode,
-    isLoading,
-    error
-  } = store
-
-  // 新增：本地状态，仅用于控制应用首次启动时的白屏/Loading
-  const [isInitializing, setIsInitializing] = useState(true)
-
-  // 设置面板状态
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-
-  // 创建默认项目结构
-  const createDefaultProjectStructure = useCallback(async () => {
-    const structure = [
-      {
-        name: 'src',
-        type: 'directory' as const,
-        path: '/src',
-        isDirectory: true
-      },
-      {
-        name: 'index.html',
-        type: 'file' as const,
-        path: '/index.html',
-        content: `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FrontendMaster 项目</title>
-</head>
-<body>
-  <div id="root"></div>
-  <script src="src/index.js"></script>
-</body>
-</html>`,
-        isDirectory: false
-      },
-      {
-        name: 'README.md',
-        type: 'file' as const,
-        path: '/README.md',
-        content: `# FrontendMaster 项目
-
-欢迎来到前端工程化复习平台！
-
-## 项目结构
-- \`src/\` - 源代码目录
-- \`index.html\` - 入口HTML文件
-
-## 开始学习
-1. 在左侧文件浏览器中查看文件
-2. 点击文件在编辑器中打开
-3. 使用终端运行命令
-4. 在右侧学习面板中查看课程
-`,
-        isDirectory: false
-      }
-    ]
-
-    for (const file of structure) {
-      await fileSystemService.createFile(
-        file.path,
-        file.content || '',
-        file.isDirectory
-      )
+  // 计算进度统计
+  const progressStats = useMemo(() => {
+    const count = completedTopics.size
+    return {
+      completed: count,
+      total: TOTAL_TOPICS,
+      percentage: TOTAL_TOPICS > 0 ? Math.round((count / TOTAL_TOPICS) * 100) : 0
     }
+  }, [completedTopics])
 
-    return await fileSystemService.getFileTree()
+  // 初始化时加载进度
+  useEffect(() => {
+    const allTopicIds: string[] = []
+    CATEGORIES.forEach(cat => {
+      cat.children.forEach(topic => {
+        allTopicIds.push(topic.id)
+      })
+    })
+
+    const completed = new Set<string>()
+    allTopicIds.forEach(id => {
+      if (isTopicCompleted(id)) {
+        completed.add(id)
+      }
+    })
+    setCompletedTopics(completed)
   }, [])
 
-  // 初始化文件系统
+  // 当选择知识点时，加载对应的代码文件
+
+  // 当选择知识点时，加载对应的代码文件
   useEffect(() => {
-    const initializeFileSystem = async () => {
-      try {
-        // 这里不要设置全局 setLoading，避免触发不必要的渲染震荡
-        // setLoading(true)
-
-        await fileSystemService.init()
-
-        const defaultFiles = await fileSystemService.getFileTree()
-
-        if (defaultFiles.length === 0) {
-          const updatedFiles = await createDefaultProjectStructure()
-          setFileSystem(updatedFiles)
-        } else {
-          setFileSystem(defaultFiles)
-        }
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Failed to initialize file system'
-        )
-      } finally {
-        // 初始化完成，关闭首屏 Loading
-        setIsInitializing(false)
-        setLoading(false)
-      }
+    if (!selectedTopicId) {
+      setFiles([])
+      return
     }
 
-    initializeFileSystem()
-  }, [])
+    getTopicCode(selectedTopicId)
+      .then(codeFiles => {
+        console.log('[App] Loaded code files for topic:', selectedTopicId, 'files:', codeFiles.map(f => ({ id: f.id, name: f.name, contentLength: f.content.length })))
+        setFiles(codeFiles)
+        // 等待 files 状态更新后再设置 activeFileId
+        setTimeout(() => {
+          if (codeFiles.length > 0) {
+            const newActiveId = codeFiles[0]?.id || 'js'
+            setActiveFileId(newActiveId)
+          }
+        }, 0)
+        setExecutionResult(null)
+      })
+      .catch(error => {
+        console.error('[App] Failed to load code files:', error)
+      })
+  }, [selectedTopicId])
 
-  // 切换活动文件
-  const handleTabClick = useCallback(
-    (fileId: string) => {
-      setActiveFile(fileId)
-    },
-    [setActiveFile]
-  )
-
-  // 关闭文件
-  const handleTabClose = useCallback(
-    (fileId: string, e: React.MouseEvent) => {
-      e.stopPropagation()
-      closeFile(fileId)
-    },
-    [closeFile]
-  )
-
-  // 处理全局错误
-  useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      setError(event.error?.message || 'An unexpected error occurred')
-    }
-
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      setError(event.reason?.message || 'A promise was rejected')
-    }
-
-    window.addEventListener('error', handleError)
-    window.addEventListener('unhandledrejection', handleUnhandledRejection)
-
-    return () => {
-      window.removeEventListener('error', handleError)
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection)
-    }
-  }, [setError])
-
-  // 修复点：这里只判断 isInitializing，不再判断 isLoading
-  // 这样当 FileExplorer 内部触发 setLoading(true) 时，App 不会被卸载，UI 依然存在
-  if (isInitializing) {
-    return <LoadingSpinner />
+  const handleTopicSelect = (topicId: string) => {
+    setSelectedTopicId(topicId)
+    setActiveFileId('js')
+    setExecutionResult(null)
   }
 
-  // 渲染主界面
+  const handleFileChange = (fileId: string, content: string) => {
+    setFiles(prev => prev.map(file => {
+      if (file.id === fileId) {
+        // 只有当内容真正改变时才设置 isModified
+        const hasContentChanged = file.content !== content
+        return { ...file, content, isModified: hasContentChanged ? true : file.isModified }
+      }
+      return file
+    }))
+  }
+
+  const handleActiveFileChange = (fileId: string) => {
+    setActiveFileId(fileId)
+  }
+
+  const handleResetFiles = () => {
+    if (selectedTopicId) {
+      getTopicCode(selectedTopicId)
+        .then(codeFiles => setFiles(codeFiles))
+        .catch(console.error)
+    }
+  }
+
+  const handleSave = () => {
+    setFiles(prev => prev.map(file => ({
+      ...file,
+      isModified: false
+    })))
+  }
+
+  const handleLoadExerciseCode = async () => {
+    if (!selectedTopicId) return
+
+    try {
+      const exercise = await getTopicExercise(selectedTopicId)
+      if (!exercise) {
+        console.log('[App] No exercise found for topic:', selectedTopicId)
+        return
+      }
+
+      console.log('[App] Loading exercise code for:', selectedTopicId)
+
+      // 更新文件内容为练习题起始代码
+      setFiles(prev => prev.map(file => {
+        if (file.id === 'js' && exercise.starterCode) {
+          return { ...file, content: exercise.starterCode, isModified: true }
+        }
+        if (file.id === 'html' && exercise.starterCodeHtml) {
+          return { ...file, content: exercise.starterCodeHtml, isModified: true }
+        }
+        if (file.id === 'css' && exercise.starterCodeCss) {
+          return { ...file, content: exercise.starterCodeCss, isModified: true }
+        }
+        return file
+      }))
+
+      setExecutionResult(null)
+    } catch (error) {
+      console.error('[App] Failed to load exercise code:', error)
+    }
+  }
+
+  const handleMarkCompleted = () => {
+    if (!selectedTopicId) return
+
+    const newCompleted = new Set(completedTopics)
+    if (newCompleted.has(selectedTopicId)) {
+      newCompleted.delete(selectedTopicId)
+    } else {
+      newCompleted.add(selectedTopicId)
+      markTopicCompleted(selectedTopicId)
+    }
+    setCompletedTopics(newCompleted)
+  }
+
+  const isCurrentTopicCompleted = selectedTopicId ? completedTopics.has(selectedTopicId) : false
+
+  // 练习题验证函数
+  const handleVerifyExercise = async (): Promise<{ passed: boolean; message: string }> => {
+    if (!selectedTopicId) {
+      return { passed: false, message: '请先选择一个知识点' }
+    }
+
+    try {
+      // 获取练习题的预期输出
+      const exercise = await getTopicExercise(selectedTopicId)
+      if (!exercise || !exercise.expectedOutput) {
+        return { passed: false, message: '该练习题暂未设置验证条件' }
+      }
+
+      // 获取当前编辑器中的代码
+      const jsFile = files.find(f => f.id === 'js')
+      const htmlFile = files.find(f => f.id === 'html')
+      const cssFile = files.find(f => f.id === 'css')
+
+      const htmlContent = htmlFile?.content || ''
+      const cssContent = cssFile?.content || ''
+      const jsContent = jsFile?.content || ''
+
+      // 使用 Promise 包装执行结果，方便等待
+      return new Promise((resolve) => {
+        const fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>${cssContent}</style>
+</head>
+<body>
+  ${htmlContent}
+  <script>
+    window.testOutput = [];
+    window.originalLog = console.log;
+    console.log = (...args) => {
+      window.testOutput.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+      window.originalLog.apply(console, args);
+    };
+
+    window.onerror = (msg, url, line, col, error) => {
+      window.testOutput.push('ERROR: ' + msg);
+    };
+
+    try {
+      ${jsContent}
+    } catch (e) {
+      window.testOutput.push('ERROR: ' + (e instanceof Error ? e.message : String(e)));
+    }
+
+    // 将结果发送回父窗口
+    setTimeout(() => {
+      window.parent.postMessage({
+        type: 'exercise-verify',
+        output: window.testOutput.join('\\n')
+      }, '*');
+    }, 100);
+  <\/script>
+</body>
+</html>`
+
+        // 创建隐藏的 iframe 执行代码
+        const iframe = document.createElement('iframe')
+        iframe.style.display = 'none'
+        document.body.appendChild(iframe)
+
+        const handleMessage = (event: MessageEvent) => {
+          if (event.data && event.data.type === 'exercise-verify') {
+            const actualOutput = event.data.output || ''
+            const expectedOutput = exercise.expectedOutput || ''
+
+            // 清理输出（去除多余空格）
+            const cleanActual = actualOutput.trim()
+            const cleanExpected = expectedOutput.trim()
+
+            // 验证结果
+            const passed = cleanActual === cleanExpected
+
+            // 清理
+            window.removeEventListener('message', handleMessage)
+            if (document.body.contains(iframe)) {
+              document.body.removeChild(iframe)
+            }
+
+            resolve({
+              passed,
+              message: passed
+                ? '✅ 验证通过！你的代码输出了正确的结果。'
+                : `❌ 验证失败。\n预期输出：${expectedOutput}\n实际输出：${actualOutput}`
+            })
+          }
+        }
+
+        window.addEventListener('message', handleMessage)
+
+        // 在 iframe 中执行
+        const doc = iframe.contentDocument || (iframe.contentWindow as any).document
+        doc.open()
+        doc.write(fullHtml)
+        doc.close()
+
+        // 超时处理
+        setTimeout(() => {
+          window.removeEventListener('message', handleMessage)
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe)
+          }
+          resolve({ passed: false, message: '验证超时，代码可能没有正常执行' })
+        }, 5000)
+      })
+    } catch (error) {
+      return { passed: false, message: `验证出错：${error}` }
+    }
+  }
+
+  const handleRunCode = async (openInNewWindow: boolean = false) => {
+    console.log('[handleRunCode] Selected topic:', selectedTopicId)
+    console.log('[handleRunCode] Files loaded:', files.map(f => ({ id: f.id, name: f.name, contentLength: f.content.length })))
+
+    if (!selectedTopicId) {
+      setExecutionResult({ error: '请先选择一个知识点' })
+      return
+    }
+
+    const jsFile = files.find(f => f.id === 'js')
+    const htmlFile = files.find(f => f.id === 'html')
+    const cssFile = files.find(f => f.id === 'css')
+
+    console.log('[handleRunCode] jsFile:', jsFile ? { id: jsFile.id, contentLength: jsFile.content.length } : 'not found')
+    console.log('[handleRunCode] htmlFile:', htmlFile ? { id: htmlFile.id, contentLength: htmlFile.content.length } : 'not found')
+    console.log('[handleRunCode] cssFile:', cssFile ? { id: cssFile.id, contentLength: cssFile.content.length } : 'not found')
+
+    try {
+      // 构建完整的 HTML 文档
+      const htmlContent = htmlFile?.content || ''
+      const cssContent = cssFile?.content || ''
+      const jsContent = jsFile?.content || ''
+
+      console.log('[handleRunCode] Executing code, jsContent length:', jsContent.length)
+
+      // 新窗口打开模式
+      if (openInNewWindow) {
+        const fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>${cssContent}</style>
+</head>
+<body>
+  ${htmlContent}
+  <script>
+    // 捕获控制台输出
+    window.output = [];
+    window.originalLog = console.log;
+    console.log = (...args) => {
+      window.output.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+      window.originalLog.apply(console, args);
+    };
+
+    // 捕获错误
+    window.onerror = (msg, url, line, col, error) => {
+      window.output.push('错误: ' + msg);
+    };
+
+    try {
+      ${jsContent}
+    } catch (e) {
+      window.output.push('错误: ' + (e instanceof Error ? e.message : String(e)));
+    }
+
+    // 显示控制台输出
+    setTimeout(() => {
+      const outputDiv = document.createElement('div');
+      outputDiv.style.cssText = 'position: fixed; bottom: 0; left: 0; right: 0; max-height: 200px; overflow-y: auto; background: #1e1e1e; color: #d4d4d4; padding: 10px; font-family: monospace; font-size: 12px; white-space: pre-wrap; border-top: 1px solid #333; z-index: 1000;';
+      outputDiv.textContent = window.output.length > 0 ? window.output.join('\\n') : '代码执行完成，无输出';
+      document.body.appendChild(outputDiv);
+    }, 100);
+  <\/script>
+</body>
+</html>`
+
+        // 打开新窗口并写入 HTML
+        const newWindow = window.open('', '_blank')
+        if (newWindow) {
+          newWindow.document.write(fullHtml)
+          newWindow.document.close()
+        } else {
+          setExecutionResult({ error: '无法打开新窗口，请检查浏览器弹窗设置' })
+        }
+        return
+      }
+
+      // 内嵌 iframe 模式（原有逻辑）
+      const fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>${cssContent}</style>
+</head>
+<body>
+  ${htmlContent}
+  <script>
+    // 捕获控制台输出
+    window.output = [];
+    window.originalLog = console.log;
+    console.log = (...args) => {
+      window.output.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+      window.originalLog.apply(console, args);
+    };
+
+    // 捕获错误
+    window.onerror = (msg, url, line, col, error) => {
+      window.output.push('错误: ' + msg);
+    };
+
+    try {
+      ${jsContent}
+    } catch (e) {
+      window.output.push('错误: ' + (e instanceof Error ? e.message : String(e)));
+    }
+
+    // 将输出发送到父窗口
+    setTimeout(() => {
+      window.parent.postMessage({ type: 'code-output', output: window.output.join('\\n') }, '*');
+    }, 100);
+  <\/script>
+</body>
+</html>`
+
+      // 创建临时 iframe 执行代码
+      const iframe = document.createElement('iframe')
+      iframe.style.display = 'none'
+      iframe.id = 'code-execution-iframe'
+
+      document.body.appendChild(iframe)
+
+      // 监听来自 iframe 的消息
+      const handleMessage = (event: MessageEvent) => {
+        if (event.data && event.data.type === 'code-output') {
+          hasReceivedMessageRef.current = true  // 标记已收到消息
+          setExecutionResult({
+            output: event.data.output || '代码执行完成，无输出',
+            html: htmlContent,
+            css: cssContent,
+            js: jsContent
+          })
+          // 清理监听器和 iframe
+          window.removeEventListener('message', handleMessage)
+          setTimeout(() => {
+            if (document.body.contains(iframe)) {
+              document.body.removeChild(iframe)
+            }
+          }, 1000)
+        }
+      }
+
+      window.addEventListener('message', handleMessage)
+
+      // 在 iframe 中执行
+      const doc = iframe.contentDocument || (iframe.contentWindow as any).document
+      doc.open()
+      doc.write(fullHtml)
+      doc.close()
+
+      // 设置超时
+      setTimeout(() => {
+        window.removeEventListener('message', handleMessage)
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe)
+        }
+        // 如果没有收到消息，显示超时
+        if (!hasReceivedMessageRef.current) {
+          setExecutionResult({ output: '代码执行完成（超时）' })
+        }
+      }, 3000)
+
+    } catch (e) {
+      setExecutionResult({ error: e instanceof Error ? e.message : String(e) })
+    }
+  }
+
+  const handleThemeToggle = () => {
+    setIsDarkMode(!isDarkMode)
+  }
+
   return (
     <ErrorBoundary>
-      <div
-        className={`flex h-screen w-screen ${isDarkMode ? 'dark' : ''} text-gray-300`}
-      >
-        {/* 如果需要全局 Loading 遮罩，可以放在这里，覆盖在内容之上，而不是替换内容 */}
-        {isLoading && (
-          <div
-            className="fixed top-0 left-0 w-full h-1 bg-blue-500 z-50 animate-pulse"
-            title="Loading..."
-          />
-        )}
+      <div className="flex h-screen w-screen bg-white dark:bg-gray-900 flex-col">
+        {/* 顶部导航栏 */}
+        <header className="h-12 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 shrink-0">
+          <div className="flex items-center gap-4">
+            <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+              FrontendMaster
+            </h1>
+            {/* 进度条 */}
+            <div className="flex items-center gap-2">
+              <div className="w-32 h-2 bg-gray-300 dark:bg-gray-600 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-green-500 transition-all duration-300"
+                  style={{ width: progressStats.percentage + '%' }}
+                />
+              </div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">
+                {progressStats.completed}/{progressStats.total} ({progressStats.percentage}%)
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* 标记完成按钮 */}
+            {selectedTopicId && (
+              <button
+                onClick={handleMarkCompleted}
+                className={`px-3 py-1 text-sm rounded transition-colors ${
+                  isCurrentTopicCompleted
+                    ? 'bg-green-500 text-white hover:bg-green-600'
+                    : 'bg-gray-300 text-gray-700 dark:bg-gray-600 dark:text-gray-300 hover:bg-gray-400 dark:hover:bg-gray-500'
+                }`}
+              >
+                {isCurrentTopicCompleted ? '✓ 已完成' : '标记完成'}
+              </button>
+            )}
+            {/* 主题切换 */}
+            <button
+              onClick={handleThemeToggle}
+              className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+              aria-label="Toggle theme"
+            >
+              {isDarkMode ? '☀️' : '🌙'}
+            </button>
+          </div>
+        </header>
 
-        {/* 侧边栏 - 文件浏览器 */}
-        <div
-          className="flex flex-col bg-editor-sidebar border-r border-editor-border shrink-0"
-          style={{
-            width: `${sidebarWidth}px`,
-            minWidth: '200px', // 调整稍微小一点的最小宽度
-            maxWidth: '400px'
-          }}
-        >
-          <Toolbar />
-          <div className="flex-1 overflow-hidden relative">
-            {/* 
-                App 已经负责了初始化加载，FileExplorer 挂载后会根据搜索词再次加载。
-                现在因为 App 不会卸载 FileExplorer，所以流程可以跑通。
-             */}
+        {/* 主内容区 */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* 左侧：知识树导航 */}
+          <div className="w-64 bg-gray-50 dark:bg-gray-850 border-r border-gray-200 dark:border-gray-700 overflow-y-auto shrink-0">
             <Suspense fallback={<LoadingSpinner />}>
-              <FileExplorer />
+              <KnowledgeTree
+                data={CATEGORIES}
+                selectedTopicId={selectedTopicId}
+                onTopicSelect={handleTopicSelect}
+                completedTopics={completedTopics}
+              />
             </Suspense>
           </div>
-        </div>
 
-        {/* 主编辑器区域 */}
-        <div className="flex-1 flex flex-col bg-editor-bg min-w-0">
-          {/* 编辑器标签页 */}
-          <div className="editor-tabs shrink-0 flex overflow-x-auto bg-editor-sidebar border-b border-editor-border">
-            {editor.openFiles.length === 0 ? (
-              <div className="px-4 py-2 text-gray-500 text-sm italic select-none">
-                无打开文件
-              </div>
-            ) : (
-              editor.openFiles.map((file: any) => (
-                <EditorTab
-                  key={file.id}
-                  file={file}
-                  isActive={file.id === editor.activeFileId}
-                  onTabClick={handleTabClick}
-                  onTabClose={handleTabClose}
-                />
-              ))
-            )}
+          {/* 中间：文档区 */}
+          <div className="flex-1 overflow-y-auto">
+            <Suspense fallback={<LoadingSpinner />}>
+              <DocumentViewer
+                topicId={selectedTopicId}
+                onLoadExerciseCode={handleLoadExerciseCode}
+                onVerifyExercise={handleVerifyExercise}
+              />
+            </Suspense>
           </div>
 
-          {/* 编辑器内容 */}
-          <div className="flex-1 min-h-0 relative">
-            {editor.activeFileId ? (
-              <Suspense fallback={<LoadingSpinner />}>
-                <Editor />
-              </Suspense>
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-gray-500 select-none">
-                <div className="text-center">
-                  <div className="text-4xl mb-4 opacity-50">⚛️</div>
-                  <div className="text-xl font-medium mb-2">FrontendMaster</div>
-                  <div className="text-sm opacity-70">
-                    使用 <span className="keyboard-shortcut">Ctrl+P</span>{' '}
-                    快速搜索文件
+          {/* 右侧：代码编辑器 + 执行结果 */}
+          <div className="w-[500px] bg-gray-50 dark:bg-gray-850 border-l border-gray-200 dark:border-gray-700 flex flex-col shrink-0">
+            {selectedTopicId && files.length > 0 ? (
+              <>
+                {/* 编辑器 */}
+                <div className="flex-1 min-h-0">
+                  <FileEditor
+                    files={files}
+                    activeFileId={activeFileId}
+                    onFileChange={handleFileChange}
+                    onActiveFileChange={handleActiveFileChange}
+                    onResetFiles={handleResetFiles}
+                    onFileSave={handleSave}
+                    theme={isDarkMode ? 'vs-dark' : 'vs'}
+                  />
+                </div>
+
+                {/* 执行按钮 */}
+                <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex gap-2">
+                  <button
+                    onClick={() => handleRunCode(false)}
+                    className="flex-1 p-2 rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 cursor-not-allowed transition-colors text-sm"
+                  >
+                    ▶️ 运行代码
+                  </button>
+                  <button
+                    onClick={() => handleRunCode(true)}
+                    className="flex-1 p-2 rounded bg-gray-600 text-white hover:bg-gray-700 disabled:opacity-50 cursor-not-allowed transition-colors text-sm"
+                  >
+                    🌐 新窗口运行
+                  </button>
+                </div>
+
+                {/* 执行结果 */}
+                <div className="h-48 border-t border-gray-200 dark:border-gray-700 flex flex-col">
+                  <div className="px-4 py-2 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">执行结果</h3>
                   </div>
+                  <div className="flex-1 p-4 overflow-hidden">
+                    <CodeExecutor result={executionResult} />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-gray-400">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">💻</div>
+                  <p>选择一个知识点开始练习</p>
                 </div>
               </div>
             )}
           </div>
-
-          {/* 终端 */}
-          {terminal.isVisible && (
-            <div
-              className="terminal-container border-t border-editor-border shrink-0 bg-black"
-              style={{ height: `${terminal.size.height}px` }}
-            >
-              <Suspense fallback={<LoadingSpinner />}>
-                <Terminal />
-              </Suspense>
-            </div>
-          )}
         </div>
-
-        {/* 学习面板 */}
-        {learningPath && (
-          <div className="w-80 bg-white dark:bg-editor-sidebar border-l border-editor-border shrink-0 overflow-y-auto">
-            <Suspense fallback={<LoadingSpinner />}>
-              <LearningPanel />
-            </Suspense>
-          </div>
-        )}
-
-        {/* 错误提示 */}
-        {error && (
-          <div className="fixed top-4 right-4 bg-red-900 border border-red-700 text-white px-4 py-3 rounded shadow-lg z-50 animate-in fade-in slide-in-from-top-2">
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm font-medium">{error}</span>
-              <button
-                className="text-gray-300 hover:text-white"
-                onClick={clearError}
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* 设置面板 */}
-        <Suspense fallback={null}>
-          <SettingsPanel
-            isOpen={isSettingsOpen}
-            onClose={() => setIsSettingsOpen(false)}
-          />
-        </Suspense>
-
-        {/* 状态栏 */}
-        <StatusBar />
       </div>
     </ErrorBoundary>
   )

@@ -1,0 +1,10 @@
+{
+  "title": "模块化练习",
+  "description": "将以下代码重构为模块化结构，使用ES6模块语法。",
+  "starterCode": {
+    "html": "<div id=\"app\"></div>",
+    "css": "",
+    "js": "const calculator = {\n  add: function(a, b) { return a + b; },\n  subtract: function(a, b) { return a - b; },\n  multiply: function(a, b) { return a * b; },\n  divide: function(a, b) { return a / b; }\n};\n\nconst utils = {\n  formatNumber: function(num) { return num.toFixed(2); },\n  validate: function(a, b) { return typeof a === 'number' && typeof b === 'number'; }\n};\n\nfunction calculate(operation, a, b) {\n  if (!utils.validate(a, b)) {\n    throw new Error('Invalid numbers');\n  }\n  \n  let result;\n  switch (operation) {\n    case 'add':\n      result = calculator.add(a, b);\n      break;\n    case 'subtract':\n      result = calculator.subtract(a, b);\n      break;\n    case 'multiply':\n      result = calculator.multiply(a, b);\n      break;\n    case 'divide':\n      result = calculator.divide(a, b);\n      break;\n    default:\n      throw new Error('Invalid operation');\n  }\n  \n  return utils.formatNumber(result);\n}\n\nconsole.log('加法:', calculate('add', 5, 3));\nconsole.log('减法:', calculate('subtract', 5, 3));\nconsole.log('乘法:', calculate('multiply', 5, 3));\nconsole.log('除法:', calculate('divide', 5, 3));"
+  },
+  "expectedOutput": "模块化重构后的代码应该：\n1. 将calculator功能分离到单独的模块\n2. 将utils功能分离到单独的模块  \n3. 主逻辑使用导入的模块\n4. 使用ES6模块语法（export和import）\n5. 代码结构更加清晰和可维护\n\nJavaScript应该使用：\n- ES6模块语法\n- 命名导出\n- 默认导出\n- 模块导入\n- 可能使用barrel文件\n\nHTML和CSS可以是空的，因为这是一个纯JavaScript练习。"
+}

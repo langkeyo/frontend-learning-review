@@ -1,0 +1,9 @@
+{
+  "description": "使用 Grid 创建一个三列两行的网格布局，第一行第一列跨越两行。",
+  "starterCodeCss": ".grid-layout {\n  display: grid;\n  /* TODO: 设置为三列两行布局 */\n}",
+  "starterCodeHtml": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Grid 布局</title>\n  <style>\n    .item {\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 20px;\n      text-align: center;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"grid-layout\">\n    <div class=\"item\">1</div>\n    <div class=\"item\">2</div>\n    <div class=\"item\">3</div>\n    <div class=\"item\">4</div>\n    <div class=\"item\">5</div>\n  </div>\n</body>\n</html>",
+  "expectedOutput": "五项元素按网格布局排列",
+  "hint": "使用 grid-template-columns 和 grid-template-rows 定义网格结构。",
+  "solutionCss": ".grid-layout {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: auto auto;\n  gap: 20px;\n  padding: 20px;\n}\n\n.item {\n  background: #f5f5f5;\n  border-radius: 8px;\n  padding: 20px;\n  text-align: center;\n}\n\n.item:first-child {\n  grid-row: 1 / 2;  /* 第一项跨越两行 */\n  grid-column: 1 / 3;\n}",
+  "solutionHtml": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Grid 布局</title>\n  <style>\n    .grid-layout {\n      display: grid;\n      grid-template-columns: repeat(3, 1fr);\n      grid-template-rows: auto auto;\n      gap: 20px;\n      padding: 20px;\n    }\n\n    .item {\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 20px;\n      text-align: center;\n    }\n\n    .item:first-child {\n      grid-row: 1 / 2;\n      grid-column: 1 / 3;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"grid-layout\">\n    <div class=\"item\">1 (跨两行)</div>\n    <div class=\"item\">2</div>\n    <div class=\"item\">3</div>\n    <div class=\"item\">4</div>\n    <div class=\"item\">5</div>\n  </div>\n</body>\n</html>"
+}

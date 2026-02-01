@@ -1,0 +1,15 @@
+{
+  "description": "创建一个简单的HTML页面，包含标题、段落和链接",
+  "starterCode": {
+    "html": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>我的第一个网页</title>\n</head>\n<body>\n    <!-- 在这里添加内容 -->\n</body>\n</html>",
+    "css": "",
+    "js": ""
+  },
+  "expectedOutput": "页面应该显示一个标题'欢迎来到我的网页'，一个段落'这是我的第一个HTML页面'，以及一个链接'访问示例网站'",
+  "hint": "使用<h1>标签创建标题，<p>标签创建段落，<a>标签创建链接",
+  "solution": {
+    "html": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>我的第一个网页</title>\n</head>\n<body>\n    <h1>欢迎来到我的网页</h1>\n    <p>这是我的第一个HTML页面</p>\n    <a href=\"https://example.com\">访问示例网站</a>\n</body>\n</html>",
+    "css": "",
+    "js": ""
+  }
+}

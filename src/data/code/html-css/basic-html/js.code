@@ -1,0 +1,48 @@
+// HTML基础JavaScript示例
+
+// DOM元素选择
+const header = document.querySelector('header');
+const navLinks = document.querySelectorAll('nav a');
+
+// 添加交互效果
+header.addEventListener('mouseenter', () => {
+    header.style.backgroundColor = '#357abd';
+});
+
+header.addEventListener('mouseleave', () => {
+    header.style.backgroundColor = '#4a90e2';
+});
+
+// 导航链接点击效果
+navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        // 模拟页面滚动到对应部分
+        const targetId = link.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+
+        if (targetElement) {
+            targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// 页面加载完成事件
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('HTML基础页面已加载');
+
+    // 检查浏览器支持
+    if ('serviceWorker' in navigator) {
+        console.log('Service Worker 支持可用');
+    }
+});
+
+// 简单的函数示例
+function greet(name) {
+    return `你好, ${name}! 欢迎学习HTML基础。`;
+}
+
+console.log(greet('学习者'));

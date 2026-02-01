@@ -1,0 +1,10 @@
+{
+  "title": "语义化标签练习",
+  "description": "使用合适的HTML语义化标签重构以下内容，提高代码的可读性和SEO效果。",
+  "starterCode": {
+    "html": "<div class=\"header\">\n  <div class=\"logo\">前端大师</div>\n  <div class=\"nav\">\n    <a href=\"#\">首页</a>\n    <a href=\"#\">关于我们</a>\n    <a href=\"#\">联系我们</a>\n  </div>\n</div>\n\n<div class=\"content\">\n  <div class=\"article\">\n    <h1>欢迎来到前端大师</h1>\n    <p>这是一个关于前端开发的教程网站。</p>\n    <p>我们提供各种前端技术的详细讲解和实战练习。</p>\n  </div>\n  \n  <div class=\"sidebar\">\n    <h3>最新文章</h3>\n    <ul>\n      <li><a href=\"#\">HTML语义化标签详解</a></li>\n      <li><a href=\"#\">CSS Flexbox布局教程</a></li>\n      <li><a href=\"#\">JavaScript ES6新特性</a></li>\n    </ul>\n  </div>\n</div>\n\n<div class=\"footer\">\n  <p>版权所有 © 2024 前端大师</p>\n</div>",
+    "css": "body {\n  font-family: Arial, sans-serif;\n  margin: 0;\n  padding: 0;\n}\n\n.header, .footer {\n  background-color: #333;\n  color: white;\n  padding: 1rem;\n  text-align: center;\n}\n\n.nav a {\n  color: white;\n  margin: 0 1rem;\n  text-decoration: none;\n}\n\n.content {\n  display: flex;\n  padding: 1rem;\n}\n\n.article {\n  flex: 3;\n  margin-right: 1rem;\n}\n\n.sidebar {\n  flex: 1;\n}\n\n.footer {\n  margin-top: 2rem;\n}",
+    "js": ""
+  },
+  "expectedOutput": "使用语义化标签重构后的HTML应该包含：\n- <header> 替代 .header\n- <nav> 替代 .nav\n- <main> 替代 .content\n- <article> 替代 .article\n- <aside> 替代 .sidebar\n- <footer> 替代 .footer\n- <h1>、<h3>、<p>、<ul>、<li>、<a> 等语义化标签\n\nCSS应该保持原有的样式，但可能需要调整选择器以匹配新的语义化标签。\n\nJavaScript可以是空的，因为这是一个纯HTML/CSS练习。"
+}

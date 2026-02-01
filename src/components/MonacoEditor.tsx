@@ -1,11 +1,8 @@
-import React, { useEffect, useRef, useCallback, useState } from 'react'
-import type { editor } from 'monaco-editor'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
+import * as monacoEditor from 'monaco-editor'
 import { EDITOR_CONFIG } from '@/constants'
 
-// --------------------------------------------------------------------------
-// 1. 引入 Worker (Vite 专用写法)
-// 直接从 node_modules 导入并加上 ?worker 后缀，Vite 会自动处理路径
-// --------------------------------------------------------------------------
+// Worker 导入
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 import CssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
@@ -31,47 +28,29 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
   onSave,
   onCursorPositionChange
 }) => {
-  const [monaco, setMonaco] = useState<typeof import('monaco-editor') | null>(
-    null
-  )
+  const [monaco, setMonaco] = useState<typeof monacoEditor | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const editorRef = useRef<HTMLDivElement>(null)
-  const editorInstanceRef = useRef<editor.IStandaloneCodeEditor | null>(null)
-  const modelRef = useRef<editor.ITextModel | null>(null)
+  const editorRef = useRef<monacoEditor.editor.IStandaloneCodeEditor | null>(null)
+  const modelRef = useRef<monacoEditor.editor.ITextModel | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const isEditorFocusedRef = useRef(false)  // 追踪编辑器是否有焦点
 
-  // --------------------------------------------------------------------------
-  // 2. 初始化环境与加载 Monaco
-  // --------------------------------------------------------------------------
+  // 初始化 Monaco 环境
   useEffect(() => {
     let mounted = true
 
     const loadMonaco = async () => {
       try {
-        // 配置 MonacoEnvironment
-        // 使用 (window as any) 绕过 TypeScript 类型检查冲突
         self.MonacoEnvironment = {
           getWorker(_: any, label: string) {
-            if (label === 'json') {
-              return new JsonWorker()
-            }
-            if (label === 'css' || label === 'scss' || label === 'less') {
-              return new CssWorker()
-            }
-            if (
-              label === 'html' ||
-              label === 'handlebars' ||
-              label === 'razor'
-            ) {
-              return new HtmlWorker()
-            }
-            if (label === 'typescript' || label === 'javascript') {
-              return new TsWorker()
-            }
+            if (label === 'json') return new JsonWorker()
+            if (label === 'css' || label === 'scss' || label === 'less') return new CssWorker()
+            if (label === 'html' || label === 'handlebars' || label === 'razor') return new HtmlWorker()
+            if (label === 'typescript' || label === 'javascript') return new TsWorker()
             return new EditorWorker()
           }
         }
 
-        // 动态导入 Monaco 核心包
         const monacoModule = await import('monaco-editor')
 
         if (mounted) {
@@ -93,21 +72,50 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
     }
   }, [])
 
-  // --------------------------------------------------------------------------
-  // 3. 初始化编辑器实例 (Hook 顺序已修复)
-  // --------------------------------------------------------------------------
+  // 创建/更新 editor 和 model 的逻辑
   const initializeEditor = useCallback(() => {
-    if (!editorRef.current || editorInstanceRef.current || !monaco) return
+    // 先清理旧的 editor 和 model
+    if (editorRef.current) {
+      console.log('[MonacoEditor] Disposing old editor')
+      editorRef.current.dispose()
+      editorRef.current = null
+    }
+    if (modelRef.current) {
+      console.log('[MonacoEditor] Disposing old model')
+      modelRef.current.dispose()
+      modelRef.current = null
+    }
 
-    // 销毁旧实例
-    // if (editorInstanceRef.current) {
-    //   editorInstanceRef.current?.dispose()
-    // }
+    if (!monaco || !containerRef.current) {
+      console.log('[MonacoEditor] Cannot initialize, monaco or container not ready')
+      return
+    }
 
-    // 创建新实例
-    const editor = monaco.editor.create(editorRef.current, {
-      value,
-      language,
+    console.log('[MonacoEditor] Initializing editor for', fileId, 'value length:', value.length, 'language:', language)
+
+    const uri = monaco.Uri.parse(`file:///${fileId}`)
+
+    // 获取或创建 model
+    let model = monaco.editor.getModel(uri)
+    if (!model) {
+      model = monaco.editor.createModel(value, language, uri)
+      console.log('[MonacoEditor] Created new model')
+    } else {
+      // 先更新 model 的值
+      if (model.getValue() !== value && !isEditorFocusedRef.current) {
+        console.log('[MonacoEditor] Updating existing model')
+        model.setValue(value)
+      }
+      // 然后更新语言
+      monaco.editor.setModelLanguage(model, language)
+    }
+
+    modelRef.current = model
+    console.log('[MonacoEditor] Model value after init:', model.getValue().substring(0, 100))
+
+    // 创建新 editor
+    const newEditor = monaco.editor.create(containerRef.current, {
+      model,
       theme,
       fontSize: EDITOR_CONFIG.defaultFontSize,
       fontFamily: EDITOR_CONFIG.defaultFontFamily,
@@ -121,9 +129,7 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
       scrollBeyondLastLine: true,
       renderWhitespace: 'selection',
       rulers: [80, 120],
-      bracketPairColorization: {
-        enabled: true
-      },
+      bracketPairColorization: { enabled: true },
       guides: {
         indentation: true,
         bracketPairs: true
@@ -136,85 +142,81 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
       acceptSuggestionOnEnter: 'on',
       tabCompletion: 'on',
       formatOnPaste: true,
-      formatOnType: true,
-      // 这里的 model 设为 null，稍后手动设置，防止状态不一致
-      model: null
+      formatOnType: true
     })
 
-    editorInstanceRef.current = editor
+    editorRef.current = newEditor
 
-    // 创建或获取 Model
-    const uri = monaco.Uri.parse(`file:///${fileId}`)
-    let model = monaco.editor.getModel(uri)
-
-    if (!model) {
-      model = monaco.editor.createModel(value, language, uri)
-    } else {
-      // 如果 Model 已存在，更新值和语言
-      if (model.getValue() !== value) {
-        model.setValue(value)
-      }
-      monaco.editor.setModelLanguage(model, language)
-    }
-
-    modelRef.current = model
-    editor.setModel(model)
-
-    // 事件监听
-    const disposable = editor.onDidChangeModelContent(() => {
-      const newValue = model?.getValue() || ''
-      // 只有当内容真的改变且不是由外部 props 引起时才触发
-      if (newValue !== value) {
-        onChange?.(newValue)
-      }
+    // === 关键：失去焦点时保存（不再在输入时保存）===
+    const blurDisposable = newEditor.onDidBlurEditorText(() => {
+      if (!modelRef.current) return
+      const newValue = modelRef.current.getValue()
+      isEditorFocusedRef.current = false
+      onChange?.(newValue)
     })
 
-    const cursorDisposable = editor.onDidChangeCursorPosition((e) => {
+    // === 追踪焦点状态 ===
+    const focusDisposable = newEditor.onDidFocusEditorText(() => {
+      isEditorFocusedRef.current = true
+    })
+
+    // 监听光标位置
+    const cursorDisposable = newEditor.onDidChangeCursorPosition((e) => {
       onCursorPositionChange?.({
         line: e.position.lineNumber,
         column: e.position.column
       })
     })
 
-    const saveDisposable = editor.addAction({
+    // === 关键：Ctrl+S 保存时也调用 onChange ===
+    newEditor.addAction({
       id: 'save-file',
       label: 'Save File',
       keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
       run: () => {
+        if (!modelRef.current) return
+        const newValue = modelRef.current.getValue()
+        onChange?.(newValue)  // 同步到父组件
         onSave?.()
       }
     })
 
-    editor.focus()
+    newEditor.focus()
 
     return () => {
-      disposable.dispose()
+      blurDisposable.dispose()
+      focusDisposable.dispose()
       cursorDisposable.dispose()
-      saveDisposable.dispose()
     }
-  }, [
-    monaco,
-    fileId,
-    value,
-    language,
-    theme,
-    onChange,
-    onSave,
-    onCursorPositionChange
-  ])
+  }, [monaco, fileId, language, theme, onChange, onSave, onCursorPositionChange, value])
 
-  // 执行初始化
+  // 执行初始化 - 只在 monaco 加载后执行
   useEffect(() => {
     if (!monaco) return
     const cleanup = initializeEditor()
     return cleanup
   }, [monaco, initializeEditor])
 
-  // 监听语言变化
+  // 当外部 value 变化时更新 model（如重置文件内容时）
+  // === 关键：只在编辑器无焦点时更新，避免打断用户输入 ===
   useEffect(() => {
-    if (!monaco || !modelRef.current) return
-    monaco.editor.setModelLanguage(modelRef.current, language)
-  }, [monaco, language])
+    console.log('[MonacoEditor] Value change effect, monaco ready:', !!monaco, 'model ready:', !!modelRef.current, 'isFocused:', isEditorFocusedRef.current, 'value length:', value.length)
+    if (!monaco || !modelRef.current) {
+      console.log('[MonacoEditor] Skipping value update, monaco or model not ready')
+      return
+    }
+    // 只在编辑器无焦点时更新，避免打断用户输入
+    if (!isEditorFocusedRef.current) {
+      const currentValue = modelRef.current.getValue()
+      console.log('[MonacoEditor] Current model value preview:', currentValue.substring(0, 100))
+      if (value !== currentValue) {
+        console.log('[MonacoEditor] Updating value, length:', value.length)
+        modelRef.current.setValue(value)
+      }
+    } else {
+      console.log('[MonacoEditor] Skipping value update, editor is focused')
+    }
+  }, [monaco, value])
 
   // 监听主题变化
   useEffect(() => {
@@ -222,39 +224,23 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
     monaco.editor.setTheme(theme)
   }, [monaco, theme])
 
-  // 监听外部内容变化
-  useEffect(() => {
-    if (!monaco || !modelRef.current) return
-    const currentValue = modelRef.current.getValue()
-    if (value !== currentValue) {
-      // 使用 pushEditOperations 保持撤销栈或 executeEdits
-      // 简单处理直接 setValue
-      modelRef.current.setValue(value)
-    }
-  }, [monaco, value])
-
-  // 工具函数
-  const formatCode = useCallback(() => {
-    editorInstanceRef.current?.getAction('editor.action.formatDocument')?.run()
-  }, [])
-
-  const findInFiles = useCallback(() => {
-    editorInstanceRef.current
-      ?.getAction('editor.action.startFindReplaceAction')
-      ?.run()
-  }, [])
-
   // 清理
   useEffect(() => {
     return () => {
       modelRef.current?.dispose()
-      editorInstanceRef.current?.dispose()
+      editorRef.current?.dispose()
     }
   }, [])
 
-  // --------------------------------------------------------------------------
-  // 渲染视图
-  // --------------------------------------------------------------------------
+  // 工具函数
+  const formatCode = useCallback(() => {
+    editorRef.current?.getAction('editor.action.formatDocument')?.run()
+  }, [])
+
+  const findInFiles = useCallback(() => {
+    editorRef.current?.getAction('editor.action.startFindReplaceAction')?.run()
+  }, [])
+
   if (isLoading || !monaco) {
     return (
       <div className="h-full w-full flex items-center justify-center bg-editor-bg text-gray-400">
@@ -268,7 +254,7 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
 
   return (
     <div className="h-full relative group">
-      <div ref={editorRef} className="h-full" />
+      <div ref={containerRef} className="h-full" />
 
       <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
         <button

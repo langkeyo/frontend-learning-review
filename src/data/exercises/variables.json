@@ -1,0 +1,15 @@
+{
+  "description": "声明并使用不同类型的变量",
+  "starterCode": {
+    "html": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>变量练习</title>\n</head>\n<body>\n    <script src=\"script.js\"></script>\n</body>\n</html>",
+    "css": "",
+    "js": "// 在这里声明变量\n\n// 使用console.log输出变量值"
+  },
+  "expectedOutput": "控制台应该显示：字符串: Hello, 数字: 42, 布尔值: true, 未定义: undefined, 空值: null, 符号: Symbol(id), 大整数: 9007199254740991",
+  "hint": "使用let和const声明变量，使用typeof检查变量类型",
+  "solution": {
+    "html": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>变量练习</title>\n</head>\n<body>\n    <script src=\"script.js\"></script>\n</body>\n</html>",
+    "css": "",
+    "js": "// 声明不同类型的变量\nconst str = \"Hello\";\nconst num = 42;\nconst bool = true;\nconst undef = undefined;\nconst nul = null;\nconst sym = Symbol(\"id\");\nconst bigInt = 9007199254740991n;\n\n// 输出变量值和类型\nconsole.log(`字符串: ${str}, 类型: ${typeof str}`);\nconsole.log(`数字: ${num}, 类型: ${typeof num}`);\nconsole.log(`布尔值: ${bool}, 类型: ${typeof bool}`);\nconsole.log(`未定义: ${undef}, 类型: ${typeof undef}`);\nconsole.log(`空值: ${nul}, 类型: ${typeof nul}`);\nconsole.log(`符号: ${sym.toString()}, 类型: ${typeof sym}`);\nconsole.log(`大整数: ${bigInt}, 类型: ${typeof bigInt}`);"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "title": "响应式设计练习",
+  "description": "创建一个响应式的网页布局，包含导航栏、内容区和侧边栏，在不同屏幕尺寸下有不同的布局方式。",
+  "starterCode": {
+    "html": "<div class=\"page\">\n  <div class=\"navbar\">导航栏</div>\n  <div class=\"content\">主要内容</div>\n  <div class=\"sidebar\">侧边栏</div>\n</div>",
+    "css": ".page {\n  display: flex;\n  min-height: 100vh;\n}\n\n.navbar {\n  background-color: #333;\n  color: white;\n  padding: 1rem;\n  flex: 0 0 200px;\n}\n\n.content {\n  flex: 1;\n  padding: 1rem;\n  background-color: #f8f8f8;\n}\n\n.sidebar {\n  flex: 0 0 250px;\n  padding: 1rem;\n  background-color: #e8e8e8;\n}",
+    "js": ""
+  },
+  "expectedOutput": "响应式网页布局应该：\n1. 在大屏幕上显示为三列布局（导航栏、内容区、侧边栏）\n2. 在中屏幕上（如平板）侧边栏变为底部\n3. 在小屏幕上（如手机）所有内容垂直堆叠\n4. 使用媒体查询实现不同屏幕尺寸的布局\n5. 保持良好的可读性和用户体验\n\nCSS应该使用：\n- Flexbox或Grid布局\n- 媒体查询\n- 相对单位（如百分比、rem、vw）\n- 可能需要调整flex属性\n\nJavaScript可以是空的，因为这是一个纯CSS练习。"
+}

@@ -1,0 +1,15 @@
+{
+  "description": "使用Axios获取并显示posts数据",
+  "starterCode": {
+    "html": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Axios练习</title>\n</head>\n<body>\n    <div id=\"posts-data\"></div>\n    <script src=\"https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js\"></script>\n    <script src=\"script.js\"></script>\n</body>\n</html>",
+    "css": "#posts-data {\n    margin: 20px;\n    padding: 20px;\n    border: 1px solid #ddd;\n    border-radius: 8px;\n    background: #f8f9fa;\n}\n\n.post-card {\n    margin-bottom: 15px;\n    padding: 15px;\n    border: 1px solid #e2e8f0;\n    border-radius: 8px;\n    background: white;\n}",
+    "js": "// 在这里使用Axios获取posts数据\n\n// 将数据显示在posts-data元素中"
+  },
+  "expectedOutput": "页面应该显示posts列表，包含标题和正文",
+  "hint": "使用axios.get获取https://jsonplaceholder.typicode.com/posts，处理响应并创建post卡片",
+  "solution": {
+    "html": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Axios练习</title>\n</head>\n<body>\n    <div id=\"posts-data\"></div>\n    <script src=\"https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js\"></script>\n    <script src=\"script.js\"></script>\n</body>\n</html>",
+    "css": "#posts-data {\n    margin: 20px;\n    padding: 20px;\n    border: 1px solid #ddd;\n    border-radius: 8px;\n    background: #f8f9fa;\n}\n\n.post-card {\n    margin-bottom: 15px;\n    padding: 15px;\n    border: 1px solid #e2e8f0;\n    border-radius: 8px;\n    background: white;\n}",
+    "js": "// 使用Axios获取posts数据\naxios.get('https://jsonplaceholder.typicode.com/posts')\n    .then(response => {\n        const postsData = document.getElementById('posts-data');\n        \n        response.data.slice(0, 5).forEach(post => {\n            const postCard = document.createElement('div');\n            postCard.className = 'post-card';\n            postCard.innerHTML = `\n                <h3>${post.title}</h3>\n                <p>${post.body}</p>\n            `;\n            postsData.appendChild(postCard);\n        });\n    })\n    .catch(error => {\n        console.error('获取posts数据失败:', error);\n        const postsData = document.getElementById('posts-data');\n        postsData.innerHTML = `<p style=\"color: red;\">错误: ${error.message}</p>`;\n    });"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "title": "解构赋值练习",
+  "description": "使用解构赋值简化以下代码，使其更加简洁和易读。",
+  "starterCode": {
+    "html": "<div id=\"app\"></div>",
+    "css": "",
+    "js": "const user = {\n  id: 1,\n  name: 'Alice',\n  email: 'alice@example.com',\n  address: {\n    street: '123 Main St',\n    city: 'New York',\n    country: 'USA'\n  }\n};\n\nconst userId = user.id;\nconst userName = user.name;\nconst userEmail = user.email;\nconst userStreet = user.address.street;\nconst userCity = user.address.city;\n\nconst numbers = [1, 2, 3, 4, 5];\nconst firstNumber = numbers[0];\nconst secondNumber = numbers[1];\nconst restNumbers = numbers.slice(2);\n\nfunction getUserInfo(userObj) {\n  return {\n    id: userObj.id,\n    name: userObj.name,\n    email: userObj.email\n  };\n}\n\nconsole.log('用户ID:', userId);\nconsole.log('用户名:', userName);\nconsole.log('邮箱:', userEmail);\nconsole.log('街道:', userStreet);\nconsole.log('城市:', userCity);\nconsole.log('第一个数字:', firstNumber);\nconsole.log('第二个数字:', secondNumber);\nconsole.log('剩余数字:', restNumbers);"
+  },
+  "expectedOutput": "使用解构赋值简化后的代码应该：\n1. 使用对象解构获取user属性\n2. 使用嵌套解构获取address属性\n3. 使用数组解构获取numbers元素\n4. 函数参数使用解构\n5. 代码更加简洁和易读\n\nJavaScript应该使用：\n- 对象解构\n- 数组解构  \n- 嵌套解构\n- 函数参数解构\n- 可能使用rest参数\n\nHTML和CSS可以是空的，因为这是一个纯JavaScript练习。"
+}

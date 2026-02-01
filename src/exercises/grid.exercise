@@ -1,0 +1,10 @@
+{
+  "title": "Grid布局练习",
+  "description": "使用CSS Grid创建一个响应式的图片网格，在大屏幕上显示4列，在中屏幕上显示2列，在小屏幕上显示1列。",
+  "starterCode": {
+    "html": "<div class=\"gallery\">\n  <div class=\"image-item\">图片1</div>\n  <div class=\"image-item\">图片2</div>\n  <div class=\"image-item\">图片3</div>\n  <div class=\"image-item\">图片4</div>\n  <div class=\"image-item\">图片5</div>\n  <div class=\"image-item\">图片6</div>\n  <div class=\"image-item\">图片7</div>\n  <div class=\"image-item\">图片8</div>\n</div>",
+    "css": ".gallery {\n  display: grid;\n  gap: 15px;\n  padding: 20px;\n}\n\n.image-item {\n  background-color: #4CAF50;\n  color: white;\n  padding: 20px;\n  text-align: center;\n  font-size: 1.2rem;\n}",
+    "js": ""
+  },
+  "expectedOutput": "使用CSS Grid创建的响应式图片网格应该：\n1. 在大屏幕上（如桌面）显示4列\n2. 在中屏幕上（如平板）显示2列  \n3. 在小屏幕上（如手机）显示1列\n4. 图片项之间有适当的间距\n5. 每个图片项有背景色和文字\n\nCSS应该使用grid属性实现布局，包括：\n- display: grid\n- grid-template-columns\n- gap\n- 媒体查询实现响应式\n- 可能使用repeat()和minmax()函数\n\nJavaScript可以是空的，因为这是一个纯CSS练习。"
+}

@@ -1,0 +1,12 @@
+<div class="container">
+<h2>过渡效果</h2>
+<button class="btn-primary">主要按钮</button>
+<button class="btn-secondary">次要按钮</button>
+<h2>动画效果</h2>
+<div class="animation-demo">
+<div class="box fade-in">淡入动画</div>
+<div class="box slide-in">滑入动画</div>
+<div class="box rotate">旋转动画</div>
+<div class="box bounce">弹跳动画</div>
+</div>
+</div>

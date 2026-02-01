@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axios示例</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Axios网络请求</h1>
+        <nav>
+            <ul>
+                <li><a href="#basic-axios">基本Axios</a></li>
+                <li><a href="#get-request">GET请求</a></li>
+                <li><a href="#post-request">POST请求</a></li>
+                <li><a href="#interceptors">拦截器</a></li>
+                <li><a href="#concurrency">并发请求</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="basic-axios">
+            <h2>基本Axios使用</h2>
+            <p>Axios是流行的HTTP客户端库：</p>
+            <pre>// 安装Axios
+// npm install axios
+
+// 基本使用
+import axios from 'axios';
+
+axios.get('https://api.example.com/data')
+    .then(response => console.log(response.data))
+    .catch(error => console.error(error));</pre>
+            <div class="example-output">
+                <p>基本Axios示例输出：</p>
+                <div id="basic-output"></div>
+            </div>
+        </section>
+
+        <section id="get-request">
+            <h2>GET请求</h2>
+            <p>使用Axios发送GET请求：</p>
+            <pre>// GET请求配置
+axios.get('https://api.example.com/users', {
+    params: {
+        id: 123,
+        sort: 'name'
+    },
+    headers: {
+        'Authorization': 'Bearer your-token'
+    }
+})
+.then(response => console.log(response.data))
+.catch(error => console.error(error));</pre>
+            <div class="example-output">
+                <p>GET请求示例输出：</p>
+                <div id="get-output"></div>
+            </div>
+        </section>
+
+        <section id="post-request">
+            <h2>POST请求</h2>
+            <p>使用Axios发送POST请求：</p>
+            <pre>// POST请求
+const userData = {
+    name: "张三",
+    email: "zhangsan@example.com"
+};
+
+axios.post('https://api.example.com/users', userData, {
+    headers: {
+        'Content-Type': 'application/json'
+    }
+})
+.then(response => console.log('创建成功:', response.data))
+.catch(error => console.error('POST请求失败:', error));</pre>
+            <div class="example-output">
+                <p>POST请求示例输出：</p>
+                <div id="post-output"></div>
+            </div>
+        </section>
+
+        <section id="interceptors">
+            <h2>拦截器</h2>
+            <p>Axios拦截器用于请求和响应的预处理：</p>
+            <pre>// 请求拦截器
+axios.interceptors.request.use(config => {
+    // 在发送请求之前做些什么
+    config.headers.Authorization = `Bearer ${getToken()}`;
+    return config;
+}, error => {
+    // 对请求错误做些什么
+    return Promise.reject(error);
+});
+
+// 响应拦截器
+axios.interceptors.response.use(response => {
+    // 对响应数据做点什么
+    return response.data;
+}, error => {
+    // 对响应错误做点什么
+    if (error.response) {
+        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+        console.error('响应错误:', error.response.status);
+    } else if (error.request) {
+        // 请求已经成功发出，但没有收到响应
+        console.error('请求错误:', error.request);
+    } else {
+        // 在设置请求时触发了错误
+        console.error('设置错误:', error.message);
+    }
+    return Promise.reject(error);
+});</pre>
+            <div class="example-output">
+                <p>拦截器示例输出：</p>
+                <div id="interceptor-output"></div>
+            </div>
+        </section>
+
+        <section id="concurrency">
+            <h2>并发请求</h2>
+            <p>使用Axios并发处理多个请求：</p>
+            <pre>// 并发请求
+function getUser() {
+    return axios.get('/user/123');
+}
+
+function getPermissions() {
+    return axios.get('/user/123/permissions');
+}
+
+axios.all([getUser(), getPermissions()])
+    .then(axios.spread((user, permissions) => {
+        console.log('用户:', user.data);
+        console.log('权限:', permissions.data);
+    }))
+    .catch(error => console.error(error));</pre>
+            <div class="example-output">
+                <p>并发请求示例输出：</p>
+                <div id="concurrency-output"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Axios提供了更强大的HTTP客户端功能</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

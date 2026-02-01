@@ -1,0 +1,73 @@
+.container {
+max-width: 800px;
+margin: 2rem auto;
+font-family: sans-serif;
+}
+/* 场景1: 导航栏 */
+.navbar {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background: #2c3e50;
+color: white;
+padding: 1rem 2rem;
+border-radius: 8px;
+margin-bottom: 2rem;
+}
+.navbar nav {
+display: flex;
+gap: 1.5rem;
+}
+.navbar a {
+color: white;
+text-decoration: none;
+}
+/* 场景2: 卡片等高布局 */
+.card-container {
+display: flex;
+gap: 1rem;
+margin-bottom: 2rem;
+}
+.card {
+flex: 1;
+background: #ecf0f1;
+padding: 1.5rem;
+border-radius: 8px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+/* 场景3: 水平垂直居中 */
+.center-box {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 200px;
+background: #3498db;
+border-radius: 8px;
+margin-bottom: 2rem;
+}
+.box {
+background: white;
+padding: 1rem 2rem;
+border-radius: 4px;
+font-weight: bold;
+}
+/* 场景4: 左右布局 */
+.split-layout {
+display: flex;
+gap: 2rem;
+}
+.split-layout aside {
+flex: 1;
+background: #f39c12;
+padding: 1rem;
+border-radius: 8px;
+min-width: 150px;
+}
+.split-layout main {
+flex: 3;
+background: #27ae60;
+padding: 1rem;
+border-radius: 8px;
+color: white;
+}`
+},

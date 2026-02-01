@@ -13,6 +13,9 @@ export default {
           600: '#2563eb',
           700: '#1d4ed8',
         },
+        gray: {
+          850: '#1f2937',
+        },
         editor: {
           bg: '#1e1e1e',
           sidebar: '#252526',

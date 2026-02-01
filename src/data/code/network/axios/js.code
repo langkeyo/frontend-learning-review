@@ -1,0 +1,336 @@
+// Axios示例
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 基本Axios示例
+    const basicOutput = document.getElementById('basic-output');
+    if (basicOutput) {
+        // 模拟Axios请求
+        const mockAxios = {
+            get: (url) => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        if (url.includes('data')) {
+                            resolve({ data: { id: 1, title: "示例数据" } });
+                        } else {
+                            reject(new Error("请求失败"));
+                        }
+                    }, 1000);
+                });
+            }
+        };
+
+        mockAxios.get('https://api.example.com/data')
+            .then(response => {
+                basicOutput.innerHTML = `
+                    <p>基本Axios结果：</p>
+                    <p>ID: ${response.data.id}</p>
+                    <p>标题: ${response.data.title}</p>
+                `;
+            })
+            .catch(error => {
+                basicOutput.innerHTML = `
+                    <p>基本Axios结果：</p>
+                    <p>错误: ${error.message}</p>
+                    <p>使用模拟数据代替</p>
+                    <p>ID: 1</p>
+                    <p>标题: 示例数据</p>
+                `;
+            });
+    }
+
+    // GET请求示例
+    const getOutput = document.getElementById('get-output');
+    if (getOutput) {
+        const mockAxios = {
+            get: (url, config) => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        if (url.includes('users')) {
+                            resolve({ data: { id: 123, name: "张三", email: "zhangsan@example.com" } });
+                        } else {
+                            reject(new Error("请求失败"));
+                        }
+                    }, 1000);
+                });
+            }
+        };
+
+        mockAxios.get('https://api.example.com/users', {
+            params: { id: 123 },
+            headers: { 'Authorization': 'Bearer token' }
+        })
+        .then(response => {
+            getOutput.innerHTML = `
+                <p>GET请求结果：</p>
+                <p>ID: ${response.data.id}</p>
+                <p>姓名: ${response.data.name}</p>
+                <p>邮箱: ${response.data.email}</p>
+            `;
+        })
+        .catch(error => {
+            getOutput.innerHTML = `
+                <p>GET请求结果：</p>
+                <p>错误: ${error.message}</p>
+                <p>使用模拟数据代替</p>
+                <p>ID: 123</p>
+                <p>姓名: 张三</p>
+                <p>邮箱: zhangsan@example.com</p>
+            `;
+        });
+    }
+
+    // POST请求示例
+    const postOutput = document.getElementById('post-output');
+    if (postOutput) {
+        const mockAxios = {
+            post: (url, data, config) => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        if (url.includes('users')) {
+                            resolve({ data: { id: 456, ...data } });
+                        } else {
+                            reject(new Error("请求失败"));
+                        }
+                    }, 1000);
+                });
+            }
+        };
+
+        const userData = {
+            name: "张三",
+            email: "zhangsan@example.com"
+        };
+
+        mockAxios.post('https://api.example.com/users', userData, {
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => {
+            postOutput.innerHTML = `
+                <p>POST请求结果：</p>
+                <p>ID: ${response.data.id}</p>
+                <p>姓名: ${response.data.name}</p>
+                <p>邮箱: ${response.data.email}</p>
+            `;
+        })
+        .catch(error => {
+            postOutput.innerHTML = `
+                <p>POST请求结果：</p>
+                <p>错误: ${error.message}</p>
+                <p>使用模拟数据代替</p>
+                <p>ID: 456</p>
+                <p>姓名: 张三</p>
+                <p>邮箱: zhangsan@example.com</p>
+            `;
+        });
+    }
+
+    // 拦截器示例
+    const interceptorOutput = document.getElementById('interceptor-output');
+    if (interceptorOutput) {
+        const mockAxios = {
+            interceptors: {
+                request: { use: () => {} },
+                response: { use: () => {} }
+            },
+            get: (url) => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve({ data: { message: "拦截器测试成功" } });
+                    }, 1000);
+                });
+            }
+        };
+
+        // 模拟拦截器
+        mockAxios.interceptors.request.use(config => {
+            config.headers = config.headers || {};
+            config.headers.Authorization = 'Bearer token';
+            return config;
+        });
+
+        mockAxios.interceptors.response.use(response => {
+            return response.data;
+        }, error => {
+            return Promise.reject(error);
+        });
+
+        mockAxios.get('https://api.example.com/test')
+            .then(data => {
+                interceptorOutput.innerHTML = `
+                    <p>拦截器结果：</p>
+                    <p>消息: ${data.message}</p>
+                    <p>请求已通过拦截器</p>
+                `;
+            })
+            .catch(error => {
+                interceptorOutput.innerHTML = `
+                    <p>拦截器结果：</p>
+                    <p>错误: ${error.message}</p>
+                    <p>拦截器测试失败</p>
+                `;
+            });
+    }
+
+    // 并发请求示例
+    const concurrencyOutput = document.getElementById('concurrency-output');
+    if (concurrencyOutput) {
+        const mockAxios = {
+            all: (promises) => Promise.all(promises),
+            spread: (callback) => {
+                return results => callback(...results);
+            },
+            get: (url) => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        if (url.includes('user')) {
+                            resolve({ data: { id: 123, name: "张三" } });
+                        } else if (url.includes('permissions')) {
+                            resolve({ data: { permissions: ["read", "write"] } });
+                        } else {
+                            reject(new Error("请求失败"));
+                        }
+                    }, 1000);
+                });
+            }
+        };
+
+        function getUser() {
+            return mockAxios.get('/user/123');
+        }
+
+        function getPermissions() {
+            return mockAxios.get('/user/123/permissions');
+        }
+
+        mockAxios.all([getUser(), getPermissions()])
+            .then(mockAxios.spread((user, permissions) => {
+                concurrencyOutput.innerHTML = `
+                    <p>并发请求结果：</p>
+                    <p>用户ID: ${user.data.id}</p>
+                    <p>用户名: ${user.data.name}</p>
+                    <p>权限: ${permissions.data.permissions.join(', ')}</p>
+                `;
+            }))
+            .catch(error => {
+                concurrencyOutput.innerHTML = `
+                    <p>并发请求结果：</p>
+                    <p>错误: ${error.message}</p>
+                    <p>并发请求失败</p>
+                `;
+            });
+    }
+});
+
+// Axios工具函数
+export function basicAxiosRequest(url) {
+    return new Promise((resolve, reject) => {
+        // 模拟Axios请求
+        setTimeout(() => {
+            if (url.includes('data')) {
+                resolve({ data: { id: 1, title: "示例数据" } });
+            } else {
+                reject(new Error("请求失败"));
+            }
+        }, 1000);
+    });
+}
+
+// GET请求工具
+export function axiosGet(url, config = {}) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if (url.includes('users')) {
+                resolve({ data: { id: 123, name: "张三", email: "zhangsan@example.com" } });
+            } else {
+                reject(new Error("请求失败"));
+            }
+        }, 1000);
+    });
+}
+
+// POST请求工具
+export function axiosPost(url, data, config = {}) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if (url.includes('users')) {
+                resolve({ data: { id: 456, ...data } });
+            } else {
+                reject(new Error("请求失败"));
+            }
+        }, 1000);
+    });
+}
+
+// 拦截器工具
+export function setupInterceptors() {
+    const mockAxios = {
+        interceptors: {
+            request: { use: () => {} },
+            response: { use: () => {} }
+        },
+        get: (url) => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve({ data: { message: "拦截器测试成功" } });
+                }, 1000);
+            });
+        }
+    };
+
+    mockAxios.interceptors.request.use(config => {
+        config.headers = config.headers || {};
+        config.headers.Authorization = 'Bearer token';
+        return config;
+    });
+
+    mockAxios.interceptors.response.use(response => {
+        return response.data;
+    }, error => {
+        return Promise.reject(error);
+    });
+
+    return mockAxios;
+}
+
+// 并发请求工具
+export function axiosConcurrency() {
+    const mockAxios = {
+        all: (promises) => Promise.all(promises),
+        spread: (callback) => {
+            return results => callback(...results);
+        },
+        get: (url) => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if (url.includes('user')) {
+                        resolve({ data: { id: 123, name: "张三" } });
+                    } else if (url.includes('permissions')) {
+                        resolve({ data: { permissions: ["read", "write"] } });
+                    } else {
+                        reject(new Error("请求失败"));
+                    }
+                }, 1000);
+            });
+        }
+    };
+
+    function getUser() {
+        return mockAxios.get('/user/123');
+    }
+
+    function getPermissions() {
+        return mockAxios.get('/user/123/permissions');
+    }
+
+    return mockAxios.all([getUser(), getPermissions()])
+        .then(mockAxios.spread((user, permissions) => {
+            return { user, permissions };
+        }));
+}
+
+// 示例使用
+console.log('基本Axios:', basicAxiosRequest('https://api.example.com/data'));
+console.log('GET请求:', axiosGet('https://api.example.com/users'));
+console.log('POST请求:', axiosPost('https://api.example.com/users', { name: "张三" }));
+console.log('拦截器:', setupInterceptors().get('https://api.example.com/test'));
+console.log('并发请求:', axiosConcurrency());

@@ -1,0 +1,9 @@
+{
+  "description": "使用 Flexbox 创建一个三列卡片布局，每列宽度相等，卡片之间有 20px 间距。",
+  "starterCodeHtml": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Flexbox 卡片布局</title>\n  <style>\n    .container {\n      display: flex;\n      flex-wrap: wrap;\n      gap: 20px;\n      padding: 20px;\n      max-width: 800px;\n      margin: 0 auto;\n    }\n    .card {\n      flex: 1 1 300px;\n      min-height: 150px;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 20px;\n      border: 1px solid #e0e0e0;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"card\">卡片 1</div>\n    <div class=\"card\">卡片 2</div>\n    <div class=\"card\">卡片 3</div>\n  </div>\n</body>\n</html>",
+  "starterCodeCss": "",
+  "expectedOutput": "三张卡片均匀分布在容器中",
+  "hint": "使用 display: flex 和 flex: 1 1 300px 来实现。flex: 1 表示放大比例，300px 是基础宽度。",
+  "solutionHtml": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Flexbox 卡片布局</title>\n  <style>\n    .container {\n      display: flex;\n      flex-wrap: wrap;\n      gap: 20px;\n      padding: 20px;\n      max-width: 800px;\n      margin: 0 auto;\n    }\n    .card {\n      flex: 1 1 300px;\n      min-height: 150px;\n      background: #f5f5f5;\n      border-radius: 8px;\n      padding: 20px;\n      border: 1px solid #e0e0e0;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"card\">卡片 1</div>\n    <div class=\"card\">卡片 2</div>\n    <div class=\"card\">卡片 3</div>\n  </div>\n</body>\n</html>",
+  "solutionCss": ""
+}

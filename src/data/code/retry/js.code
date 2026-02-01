@@ -1,0 +1,145 @@
+// ==================== 固定间隔重试 ====================
+console.log('--- 固定间隔重试 ---')
+async function fetchWithRetry(url: string, options: RequestInit = {}, maxRetries = 3, retryDelay = 1000) {
+for (let attempt = 1; attempt <= maxRetries; attempt++) {
+try {
+console.log(\`尝试第 \${attempt} 次...\`)
+const response = await mockFetch(url, options)
+if (response.ok) {
+console.log(\`第 \${attempt} 次成功!\`)
+return await response.json()
+}
+// 非 2xx 错误不重试（如 404）
+if (response.status >= 400 && response.status < 500) {
+console.log('客户端错误，不重试')
+throw new Error('请求失败')
+}
+if (attempt < maxRetries) {
+console.log(\`失败，\${retryDelay}ms 后重试...\`)
+await new Promise(resolve => setTimeout(resolve, retryDelay))
+}
+} catch (error) {
+console.log(\`第 \${attempt} 次出错:\`, error)
+if (attempt < maxRetries) {
+await new Promise(resolve => setTimeout(resolve, retryDelay))
+}
+}
+}
+throw new Error('重试次数用尽')
+}
+// 模拟 fetch
+function mockFetch(url: string, options?: any) {
+let attempt = 0
+const failFirstTwo = url.includes('/api/reliable')
+return new Promise((resolve, reject) => {
+attempt++
+if (failFirstTwo && attempt <= 2) {
+setTimeout(() => reject(new Error('模拟失败')), 100)
+} else {
+setTimeout(() => resolve({ ok: true, status: 200, json: () => Promise.resolve({ data: url }) }), 100)
+}
+})
+}
+// 使用重试请求
+fetchWithRetry('/api/reliable/data')
+.then(data => console.log('成功:', data))
+.catch(error => console.error('失败:', error))
+// ==================== 指数退避重试 ====================
+console.log('\\n--- 指数退避重试 ---')
+async function fetchWithExponentialBackoff(url: string, options: RequestInit = {}, maxRetries = 3) {
+let baseDelay = 1000 // 初始延迟 1s
+for (let attempt = 1; attempt <= maxRetries; attempt++) {
+try {
+console.log(\`尝试第 \${attempt} 次，延迟 \${baseDelay}ms...\`)
+const response = await mockFetch(url, options)
+if (response.ok) {
+console.log(\`第 \${attempt} 次成功!\`)
+return await response.json()
+}
+if (response.status >= 400 && response.status < 500) {
+console.log('客户端错误，不重试')
+throw new Error('请求失败')
+}
+if (attempt < maxRetries) {
+baseDelay *= 2 // 指数退避：1s, 2s, 4s
+console.log(\`失败，\${baseDelay}ms 后重试...\`)
+await new Promise(resolve => setTimeout(resolve, baseDelay))
+}
+} catch (error) {
+console.log(\`第 \${attempt} 次出错:\`, error)
+if (attempt < maxRetries) {
+baseDelay *= 2
+await new Promise(resolve => setTimeout(resolve, baseDelay))
+}
+}
+}
+throw new Error('重试次数用尽')
+}
+fetchWithExponentialBackoff('/api/reliable/data')
+.then(data => console.log('成功:', data))
+.catch(error => console.error('失败:', error))
+// ==================== 超时控制 ====================
+console.log('\\n--- 超时控制 ---')
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeout = 3000) {
+const controller = new AbortController()
+const timeoutId = setTimeout(() => {
+controller.abort()
+}, timeout)
+try {
+const response = await mockFetch(url, { signal: controller.signal })
+clearTimeout(timeoutId)
+return response
+} catch (error) {
+clearTimeout(timeoutId)
+if ((error as any).name === 'AbortError') {
+throw new Error('请求超时')
+}
+throw error
+}
+}
+fetchWithTimeout('/api/fast/data')
+.then(data => console.log('成功:', data))
+.catch(error => console.error('错误:', error))
+// ==================== 完整的 HTTP 客户端 ====================
+console.log('\\n--- 完整的 HTTP 客户端 ---')
+class HttpClient {
+private baseOptions: RequestInit = {
+headers: { 'Content-Type': 'application/json' }
+}
+async get(url: string, options = {}) {
+return this.request(url, { ...this.baseOptions, ...options, method: 'GET' })
+}
+async post(url: string, data: any, options = {}) {
+return this.request(url, { ...this.baseOptions, ...options, method: 'POST', body: JSON.stringify(data) })
+}
+private async request(url: string, options: RequestInit) {
+const maxRetries = 3
+const baseDelay = 1000
+for (let attempt = 1; attempt <= maxRetries; attempt++) {
+try {
+console.log(\`请求: \${options.method} \${url} (第\${attempt}次)\`)
+const response = await mockFetch(url, options)
+if (response.ok) {
+console.log('成功!')
+return await response.json()
+}
+// 5xx 错误重试，4xx 不重试
+if (response.status < 500 || attempt === maxRetries) {
+throw new Error(\`请求失败: \${response.status}\`)
+}
+// 指数退避
+await new Promise(resolve => setTimeout(resolve, baseDelay * Math.pow(2, attempt - 1)))
+} catch (error) {
+if (attempt === maxRetries) {
+throw error
+}
+await new Promise(resolve => setTimeout(resolve, 1000))
+}
+}
+}
+}
+const client = new HttpClient()
+client.get('/api/users')
+.then(users => console.log('用户列表:', users))
+.catch(error => console.error('获取失败:', error))"
+},

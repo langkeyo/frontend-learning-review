@@ -1,0 +1,11 @@
+{
+  "description": "创建一个 Promise，延迟 1 秒后返回 'Hello!'，然后使用 .then() 和 .catch() 处理结果。",
+  "starterCodeJs": "// 练习：Promise 和异步处理\n\n// TODO: 创建 Promise，1秒后返回 'Hello!'\n// TODO: 使用 .then() 处理成功\n// TODO: 使用 .catch() 处理错误\n",
+  "starterCodeHtml": "",
+  "starterCodeCss": "",
+  "expectedOutput": "Success: Hello!",
+  "hint": "使用 new Promise((resolve, reject) => { ... }) 来创建 Promise。\n在 setTimeout 中调用 resolve() 表示成功，或 reject() 表示失败。",
+  "solutionJs": "// 练习：Promise 和异步处理\n\nnew Promise((resolve, reject) => {\n  setTimeout(() => {\n    resolve('Hello!')\n  }, 1000)\n})\n  .then(result => {\n    console.log('Success:', result)\n  })\n  .catch(error => {\n    console.error('Error:', error)\n  })",
+  "solutionHtml": "",
+  "solutionCss": ""
+}

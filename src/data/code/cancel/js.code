@@ -1,0 +1,120 @@
+// ==================== 基础用法 ====================
+console.log('--- AbortController 基础用法 ---')
+const controller = new AbortController()
+// 模拟 fetch
+const mockFetch = (url: string, options?: any) => {
+console.log(\`请求: \${url}, 信号: \${options?.signal?.aborted}\`)
+if (options?.signal?.aborted) {
+return Promise.reject(new DOMException('Aborted', 'AbortError'))
+}
+return new Promise(resolve => {
+setTimeout(() => resolve({ data: url + ' 数据' }), 1000)
+})
+}
+// 发起可取消的请求
+mockFetch('/api/data', { signal: controller.signal })
+.then(result => console.log('成功:', result))
+.catch(error => {
+if (error.name === 'AbortError') {
+console.log('请求被取消:', error.message)
+} else {
+console.error('其他错误:', error)
+}
+})
+// 取消请求
+console.log('\\n取消请求...')
+controller.abort()
+// ==================== 搜索防抖场景 ====================
+console.log('\\n--- 搜索防抖场景 ---')
+function createCancelableSearch() {
+let controller: AbortController | null = null
+return function search(query: string) {
+// 取消前一次请求
+if (controller) {
+console.log('取消前一次搜索:', query)
+controller.abort()
+}
+// 创建新控制器
+controller = new AbortController()
+// 发起新请求
+console.log('发起搜索:', query, '信号状态:', controller.signal.aborted)
+mockFetch('/api/search?q=' + query, { signal: controller.signal })
+.then(result => console.log('搜索结果:', result))
+.catch(error => {
+if (error.name === 'AbortError') {
+console.log('搜索已取消（输入变化）')
+} else {
+console.error('搜索失败:', error)
+}
+})
+}
+}
+// 模拟用户快速输入搜索词
+const search = createCancelableSearch()
+search('a')
+search('ab')  // 取消 'a' 的搜索
+search('abc') // 取消 'ab' 的搜索
+search('abcd') // 取消 'abc' 的搜索
+// 最后一个搜索会完成
+setTimeout(() => {
+search('done')
+console.log('最终搜索完成')
+}, 1000)
+// ==================== 组件卸载时取消 ====================
+console.log('\\n--- 组件卸载时取消 ---')
+class Component {
+private controller: AbortController | null = null
+async fetchData() {
+// 取消前一次请求
+if (this.controller) {
+this.controller.abort()
+}
+this.controller = new AbortController()
+try {
+const data = await mockFetch('/api/data', { signal: this.controller.signal })
+console.log('获取数据:', data)
+} catch (error) {
+if (error.name !== 'AbortError') {
+console.error('请求失败:', error)
+}
+}
+}
+unmount() {
+console.log('组件卸载，取消请求')
+if (this.controller) {
+this.controller.abort()
+}
+}
+}
+const component = new Component()
+component.fetchData()
+// 模拟组件卸载
+setTimeout(() => component.unmount(), 2000)
+// ==================== 超时自动取消 ====================
+console.log('\\n--- 超时自动取消 ---')
+async function fetchWithTimeout(url: string, timeout: number) {
+const controller = new AbortController()
+const timeoutId = setTimeout(() => {
+console.log('超时，取消请求')
+controller.abort()
+}, timeout)
+try {
+const response = await mockFetch(url, { signal: controller.signal })
+clearTimeout(timeoutId)
+return response
+} catch (error) {
+clearTimeout(timeoutId)
+throw error
+}
+}
+// 使用超时请求
+fetchWithTimeout('/api/data', 500)
+.then(result => console.log('成功:', result))
+.catch(error => {
+if (error.name === 'AbortError') {
+console.log('请求超时')
+} else {
+console.error('请求失败:', error)
+}
+})`
+},

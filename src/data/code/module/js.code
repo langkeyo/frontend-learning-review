@@ -1,0 +1,66 @@
+// ==================== 命名导出 ====================
+console.log('--- 命名导出 ---')
+// utils.js (导出多个)
+// export const add = (a, b) => a + b
+// export const multiply = (a, b) => a * b
+// 在代码中模拟
+const utils = {
+add: (a: number, b: number) => a + b,
+multiply: (a: number, b: number) => a * b
+}
+console.log('3 + 4 =', utils.add(3, 4))
+console.log('3 * 4 =', utils.multiply(3, 4))
+// ==================== 默认导出 ====================
+console.log('\\n--- 默认导出 ---')
+// greet.js (默认导出)
+// export default function greet(name) {
+//   return \`Hello, \${name}!\`
+// }
+const greet = (name: string) => \`Hello, \${name}!\`
+console.log(greet('Alice'))
+console.log(greet('Bob'))
+// ==================== 导入语法 ====================
+console.log('\\n--- 导入语法 ---')
+// 1. 导入所有（作为对象）
+// import * as all from './module'
+const all = {
+name: 'Tom',
+age: 25,
+greet: (name: string) => \`Hi \${name}\`
+}
+console.log('all:', all.name, all.age)
+// 2. 解构导入
+// import { name, age } from './module'
+const { name: userName, age: userAge } = all
+console.log('解构导入:', userName, userAge)
+// 3. 重命名导入
+// import { name as n, age as a } from './module'
+const user = {
+n: 'Jerry',
+a: 30
+}
+console.log('重命名导入:', user.n, user.a)
+// 4. 副作用导入
+// import { greet, ...rest } from './module'
+const { greet: sayHi, ...otherInfo } = all
+console.log('副作用导入:', sayHi('Alice'))
+console.log('其他信息:', otherInfo)
+// ==================== 动态导入 ====================
+console.log('\\n--- 动态导入（仅在代码执行时加载） ---')
+// import('./math.js').then(math => math.add(1, 2))
+// 模拟动态导入
+Promise.resolve({ add: (a: number, b: number) => a + b })
+.then(math => console.log('动态导入 1+2 =', math.add(1, 2)))
+// ==================== 导出/导入类 ====================
+console.log('\\n--- 类的模块化 ---')
+// user.js
+// export class User { ... }
+class User {
+constructor(public name: string, public age: number) {}
+introduce() {
+console.log(\`我是 \${this.name}, \${this.age} 岁\`)
+}
+}
+const user = new User('Tom', 25)
+user.introduce()`
+},

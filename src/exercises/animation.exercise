@@ -1,0 +1,10 @@
+{
+  "title": "CSS动画练习",
+  "description": "创建一个按钮，当鼠标悬停时会有缩放和颜色变化的动画效果。",
+  "starterCode": {
+    "html": "<button class=\"animated-button\">点击我</button>",
+    "css": ".animated-button {\n  padding: 12px 24px;\n  background-color: #4CAF50;\n  color: white;\n  border: none;\n  border-radius: 4px;\n  font-size: 16px;\n  cursor: pointer;\n  transition: background-color 0.3s;\n}\n\n.animated-button:hover {\n  background-color: #45a049;\n}",
+    "js": ""
+  },
+  "expectedOutput": "CSS动画应该实现：\n1. 按钮在鼠标悬停时有缩放效果（如放大1.05倍）\n2. 按钮在鼠标悬停时有颜色变化动画\n3. 动画应该平滑，有适当的持续时间\n4. 可能包含其他动画效果如阴影变化\n\nCSS应该使用：\n- transform属性实现缩放\n- transition属性实现平滑过渡\n- 可能使用:hover伪类\n- 可能使用box-shadow属性\n\nJavaScript可以是空的，因为这是一个纯CSS练习。"
+}

@@ -1,0 +1,15 @@
+{
+  "description": "创建并使用箭头函数和高阶函数",
+  "starterCode": {
+    "html": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>函数练习</title>\n</head>\n<body>\n    <script src=\"script.js\"></script>\n</body>\n</html>",
+    "css": "",
+    "js": "// 在这里创建箭头函数和高阶函数\n\n// 使用console.log测试函数"
+  },
+  "expectedOutput": "控制台应该显示：平方: 25, 立方: 125, 数组映射: [2, 4, 6, 8, 10], 数组过滤: [2, 4], 数组归约: 30",
+  "hint": "使用箭头函数创建简单函数，使用map、filter、reduce等高阶函数",
+  "solution": {
+    "html": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>函数练习</title>\n</head>\n<body>\n    <script src=\"script.js\"></script>\n</body>\n</html>",
+    "css": "",
+    "js": "// 箭头函数\nconst square = x => x * x;\nconst cube = x => x * x * x;\n\n// 高阶函数\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(x => x * 2);\nconst evenNumbers = numbers.filter(x => x % 2 === 0);\nconst sum = numbers.reduce((total, x) => total + x, 0);\n\n// 输出结果\nconsole.log(`平方: ${square(5)}`);\nconsole.log(`立方: ${cube(5)}`);\nconsole.log(`数组映射: ${doubled}`);\nconsole.log(`数组过滤: ${evenNumbers}`);\nconsole.log(`数组归约: ${sum}`);"
+  }
+}

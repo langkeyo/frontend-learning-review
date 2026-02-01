@@ -1,0 +1,79 @@
+// ==================== Iterator 基础 ====================
+console.log('--- Iterator 基础 ---')
+// 1. 数组的 Symbol.iterator
+const arr = [1, 2, 3]
+const iterator = arr[Symbol.iterator]()
+console.log('逐个获取:')
+let result = iterator.next()
+while (!result.done) {
+console.log(result.value)
+result = iterator.next()
+}
+// 2. for...of 遍历（自动调用 Symbol.iterator）
+console.log('\\nfor...of 遍历:')
+for (const item of arr) {
+console.log(item)
+}
+// ==================== Generator 基础 ====================
+console.log('\\n--- Generator 基础 ---')
+function* simpleGenerator() {
+console.log('开始执行')
+yield 1
+console.log('yield 1 后')
+yield 2
+console.log('yield 2 后')
+yield 3
+console.log('yield 3 后')
+console.log('执行完毕')
+}
+const gen = simpleGenerator()
+console.log('第一次调用 next():', gen.next())
+console.log('第二次调用 next():', gen.next())
+console.log('第三次调用 next():', gen.next())
+console.log('第四次调用 next():', gen.next())
+// ==================== Generator 应用 ====================
+console.log('\\n--- Generator 应用 ---')
+// 1. 无限序列
+function* infiniteSequence() {
+let i = 0
+while (true) {
+yield i++
+}
+}
+const infiniteGen = infiniteSequence()
+console.log('无限序列前5个值:')
+for (let i = 0; i < 5; i++) {
+console.log(infiniteGen.next().value)
+}
+// 2. 斐波那契数列
+function* fibonacci(count) {
+let [a, b] = [0, 1]
+for (let i = 0; i < count; i++) {
+yield a
+[a, b] = [b, a + b]
+}
+}
+console.log('\\n斐波那契前10个数:')
+for (const num of fibonacci(10)) {
+console.log(num)
+}
+// 3. 自定义可迭代对象
+const range = {
+[Symbol.iterator]() {
+let current = 0
+const end = 5
+return {
+next() {
+if (current < end) {
+return { value: current++, done: false }
+}
+return { value: undefined, done: true }
+}
+}
+}
+}
+console.log('\\n自定义可迭代对象:')
+for (const num of range) {
+console.log(num)
+}`
+},

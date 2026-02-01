@@ -1,0 +1,10 @@
+{
+  "title": "Iterator和Generator练习",
+  "description": "使用Generator创建一个斐波那契数列生成器，并使用for...of循环遍历前10个数字。",
+  "starterCode": {
+    "html": "<div id=\"app\"></div>",
+    "css": "",
+    "js": "function fibonacci(n) {\n  const sequence = [0, 1];\n  for (let i = 2; i < n; i++) {\n    sequence.push(sequence[i - 1] + sequence[i - 2]);\n  }\n  return sequence;\n}\n\nconst fibSequence = fibonacci(10);\nconsole.log('斐波那契数列:', fibSequence);"
+  },
+  "expectedOutput": "使用Generator实现的斐波那契数列应该：\n1. 创建一个无限或有限长度的斐波那契数列生成器\n2. 使用yield关键字生成数列\n3. 使用for...of循环遍历前10个数字\n4. 代码更加函数式和声明式\n\nJavaScript应该使用：\n- Generator函数（function*）\n- yield关键字\n- for...of循环\n- 可能使用解构赋值\n\nHTML和CSS可以是空的，因为这是一个纯JavaScript练习。"
+}

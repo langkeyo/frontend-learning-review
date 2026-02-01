@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript函数示例</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>JavaScript函数学习</h1>
+        <nav>
+            <ul>
+                <li><a href="#function-declaration">函数声明</a></li>
+                <li><a href="#arrow-functions">箭头函数</a></li>
+                <li><a href="#parameters">参数处理</a></li>
+                <li><a href="#scope">作用域与闭包</a></li>
+                <li><a href="#higher-order">高阶函数</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="function-declaration">
+            <h2>函数声明</h2>
+            <p>JavaScript中可以使用多种方式声明函数：</p>
+            <pre>// 函数声明
+function greet(name) {
+    return `你好, ${name}!`;
+}
+
+// 函数表达式
+const add = function(a, b) {
+    return a + b;
+};
+
+// 立即执行函数表达式 (IIFE)
+(function() {
+    console.log("立即执行");
+})();</pre>
+            <div class="example-output">
+                <p>函数声明示例输出：</p>
+                <div id="declaration-output"></div>
+            </div>
+        </section>
+
+        <section id="arrow-functions">
+            <h2>箭头函数</h2>
+            <p>ES6引入的箭头函数提供更简洁的语法：</p>
+            <pre>// 基本箭头函数
+const multiply = (a, b) => a * b;
+
+// 多行箭头函数
+const complexCalc = (a, b) => {
+    const result = a * b;
+    return result + 10;
+};
+
+// 无参数箭头函数
+const sayHello = () => "Hello!";
+
+// 单参数箭头函数（可省略括号）
+const square = x => x * x;</pre>
+            <div class="example-output">
+                <p>箭头函数示例输出：</p>
+                <div id="arrow-output"></div>
+            </div>
+        </section>
+
+        <section id="parameters">
+            <h2>参数处理</h2>
+            <p>JavaScript函数支持多种参数处理方式：</p>
+            <pre>// 默认参数
+function greet(name = "访客") {
+    return `你好, ${name}!`;
+}
+
+// 剩余参数
+function sum(...numbers) {
+    return numbers.reduce((total, num) => total + num, 0);
+}
+
+// 解构参数
+function displayUser({ name, age, city }) {
+    return `${name}，${age}岁，来自${city}`;
+}
+
+// 参数验证
+function safeDivide(a, b) {
+    if (b === 0) {
+        throw new Error("除数不能为零");
+    }
+    return a / b;
+}</pre>
+            <div class="example-output">
+                <p>参数处理示例输出：</p>
+                <div id="parameters-output"></div>
+            </div>
+        </section>
+
+        <section id="scope">
+            <h2>作用域与闭包</h2>
+            <p>闭包允许函数访问外部作用域的变量：</p>
+            <pre>// 闭包示例
+function createCounter() {
+    let count = 0;
+    return function() {
+        count++;
+        return count;
+    };
+}
+
+const counter = createCounter();
+console.log(counter()); // 1
+console.log(counter()); // 2
+
+// 模块模式
+const module = (function() {
+    let privateData = "私有数据";
+
+    return {
+        getData: function() {
+            return privateData;
+        },
+        setData: function(value) {
+            privateData = value;
+        }
+    };
+})();</pre>
+            <div class="example-output">
+                <p>闭包示例输出：</p>
+                <div id="closure-output"></div>
+            </div>
+        </section>
+
+        <section id="higher-order">
+            <h2>高阶函数</h2>
+            <p>接受或返回其他函数的函数：</p>
+            <pre>// map函数
+const numbers = [1, 2, 3, 4, 5];
+const doubled = numbers.map(num => num * 2);
+
+// filter函数
+const evenNumbers = numbers.filter(num => num % 2 === 0);
+
+// reduce函数
+const sum = numbers.reduce((total, num) => total + num, 0);
+
+// 函数组合
+const compose = (f, g) => x => f(g(x));
+
+const addOne = x => x + 1;
+const double = x => x * 2;
+const addOneThenDouble = compose(double, addOne);</pre>
+            <div class="example-output">
+                <p>高阶函数示例输出：</p>
+                <div id="higher-order-output"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>函数是JavaScript编程的核心概念，掌握它们对于编写优雅的代码至关重要</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

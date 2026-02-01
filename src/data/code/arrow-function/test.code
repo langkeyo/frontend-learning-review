@@ -1,0 +1,14 @@
+// ==================== 基础语法 ====================
+// 1. 简单箭头函数
+const add = (a, b) => a + b
+console.log('2 + 3 =', add(2, 3))
+
+// ==================== 数组方法 ====================
+const numbers = [1, 2, 3, 4, 5]
+const doubled = numbers.map(n => n * 2)
+console.log('翻倍:', doubled)
+
+// ==================== 对象解构 ====================
+const user = { name: 'Alice', age: 25 }
+const { name, age } = user
+console.log(name, 'is', age, 'years old')

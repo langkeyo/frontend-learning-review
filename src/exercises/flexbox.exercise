@@ -1,0 +1,10 @@
+{
+  "title": "Flexbox布局练习",
+  "description": "使用Flexbox创建一个响应式的三列布局，中间列宽度最大，左右列宽度较小。",
+  "starterCode": {
+    "html": "<div class=\"container\">\n  <div class=\"column left\">左列</div>\n  <div class=\"column middle\">中间列</div>\n  <div class=\"column right\">右列</div>\n</div>",
+    "css": ".container {\n  display: flex;\n  gap: 20px;\n  padding: 20px;\n}\n\n.column {\n  padding: 20px;\n  background-color: #f0f0f0;\n  border: 1px solid #ddd;\n}\n\n.left, .right {\n  flex: 1;\n}\n\n.middle {\n  flex: 2;\n}",
+    "js": ""
+  },
+  "expectedOutput": "使用Flexbox创建的三列布局应该：\n1. 在大屏幕上显示为三列，中间列宽度最大\n2. 在小屏幕上（如手机）自动堆叠为一列\n3. 列之间有适当的间距\n4. 每列有 padding 和边框\n5. 响应式设计，适应不同屏幕尺寸\n\nCSS应该使用flexbox属性实现布局，包括：\n- display: flex\n- flex-grow/flex-shrink\n- gap 或 margin\n- 媒体查询实现响应式\n\nJavaScript可以是空的，因为这是一个纯CSS练习。"
+}

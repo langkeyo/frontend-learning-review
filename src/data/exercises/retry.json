@@ -1,0 +1,11 @@
+{
+  "description": "模拟 fetch 请求，处理 404 错误，设置 3 秒超时，最多重试 2 次。",
+  "starterCodeJs": "// 练习：fetch API、错误处理和重试\n\n// TODO: 使用 fetch 发起请求\n// TODO: 处理 404 错误\n// TODO: 设置超时\n// TODO: 实现重试逻辑\n",
+  "starterCodeHtml": "",
+  "starterCodeCss": "",
+  "expectedOutput": "请求成功或最终失败",
+  "hint": "1. 使用 fetch(url) 发起请求\n2. 检查 response.ok 判断是否成功\n3. 使用 AbortController 实现超时\n4. 使用 try-catch 和递归实现重试",
+  "solutionJs": "// 练习：fetch API、错误处理和重试\n\nasync function fetchData(url, retries = 2) {\n  try {\n    // 设置超时 3 秒\n    const controller = new AbortController()\n    const timeoutId = setTimeout(() => controller.abort(), 3000)\n\n    const response = await fetch(url, { signal: controller.signal })\n    clearTimeout(timeoutId)\n\n    if (!response.ok) {\n      if (response.status === 404 && retries > 0) {\n        console.log(`404 错误，剩余重试次数: ${retries - 1}`)\n        return await fetchData(url, retries - 1)\n      }\n      throw new Error(`HTTP ${response.status}`)\n    }\n\n    return await response.json()\n  } catch (error) {\n    if (error.name === 'AbortError') {\n      console.error('请求超时')\n    }\n    throw error\n  }\n}\n\n// 模拟调用（实际项目中替换为真实 URL）\nfetchData('/api/data')\n  .then(data => console.log('数据:', data))\n  .catch(error => console.error('最终错误:', error.message))",
+  "solutionHtml": "",
+  "solutionCss": ""
+}

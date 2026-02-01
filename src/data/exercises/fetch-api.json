@@ -1,0 +1,15 @@
+{
+  "description": "使用Fetch API获取并显示用户数据",
+  "starterCode": {
+    "html": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Fetch API练习</title>\n</head>\n<body>\n    <div id=\"user-data\"></div>\n    <script src=\"script.js\"></script>\n</body>\n</html>",
+    "css": "#user-data {\n    margin: 20px;\n    padding: 20px;\n    border: 1px solid #ddd;\n    border-radius: 8px;\n    background: #f8f9fa;\n}\n\n.user-card {\n    margin-bottom: 15px;\n    padding: 15px;\n    border: 1px solid #e2e8f0;\n    border-radius: 8px;\n    background: white;\n}",
+    "js": "// 在这里使用Fetch API获取用户数据\n\n// 将数据显示在user-data元素中"
+  },
+  "expectedOutput": "页面应该显示用户列表，包含用户名、邮箱和ID",
+  "hint": "使用fetch函数获取https://jsonplaceholder.typicode.com/users，处理响应并创建用户卡片",
+  "solution": {
+    "html": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Fetch API练习</title>\n</head>\n<body>\n    <div id=\"user-data\"></div>\n    <script src=\"script.js\"></script>\n</body>\n</html>",
+    "css": "#user-data {\n    margin: 20px;\n    padding: 20px;\n    border: 1px solid #ddd;\n    border-radius: 8px;\n    background: #f8f9fa;\n}\n\n.user-card {\n    margin-bottom: 15px;\n    padding: 15px;\n    border: 1px solid #e2e8f0;\n    border-radius: 8px;\n    background: white;\n}",
+    "js": "// 使用Fetch API获取用户数据\nfetch('https://jsonplaceholder.typicode.com/users')\n    .then(response => {\n        if (!response.ok) {\n            throw new Error('网络响应不正常');\n        }\n        return response.json();\n    })\n    .then(users => {\n        const userData = document.getElementById('user-data');\n        \n        users.forEach(user => {\n            const userCard = document.createElement('div');\n            userCard.className = 'user-card';\n            userCard.innerHTML = `\n                <h3>${user.name}</h3>\n                <p>邮箱: ${user.email}</p>\n                <p>ID: ${user.id}</p>\n            `;\n            userData.appendChild(userCard);\n        });\n    })\n    .catch(error => {\n        console.error('获取用户数据失败:', error);\n        const userData = document.getElementById('user-data');\n        userData.innerHTML = `<p style=\"color: red;\">错误: ${error.message}</p>`;\n    });"
+  }
+}

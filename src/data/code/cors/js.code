@@ -1,0 +1,81 @@
+// ==================== 跨域请求示例 ====================
+console.log('--- 跨域请求 ---')
+// 模拟 fetch 函数，返回跨域响应
+function mockFetch(url: string, options?: RequestInit) {
+console.log(\`\${options?.method || 'GET'} \${url}\`)
+// 模拟 OPTIONS 预检请求
+if (options?.method === 'OPTIONS') {
+return Promise.resolve({
+ok: true,
+status: 200,
+headers: {
+get: (name: string) => name.toLowerCase() === 'access-control-allow-methods' ? 'GET, POST, PUT, DELETE' : null
+}
+})
+}
+// 模拟实际请求
+return Promise.resolve({
+ok: true,
+status: 200,
+json: () => Promise.resolve({ data: '来自跨域 API 的数据', url })
+})
+}
+// 简单的 GET 请求（会自动触发 CORS）
+mockFetch('https://api.example.com/data')
+.then(response => response.json())
+.then(data => console.log('数据:', data))
+.catch(error => console.error('错误:', error))
+// ==================== 带 credentials 的请求 ====================
+console.log('\\n--- 带 credentials 的请求 ---')
+mockFetch('https://api.example.com/profile', {
+credentials: 'include'  // 发送 Cookie
+headers: {
+'Content-Type': 'application/json'
+}
+})
+.then(response => response.json())
+.then(data => console.log('用户资料:', data))
+.catch(error => console.error('错误:', error))
+// ==================== POST 请求（触发预检） ====================
+console.log('\\n--- POST 请求（触发预检）---')
+// 浏览器会先发送 OPTIONS 预检请求
+mockFetch('https://api.example.com/users', {
+method: 'OPTIONS'
+})
+.then(response => {
+console.log('OPTIONS 响应状态:', response.status)
+console.log('允许的方法:', response.headers.get('Access-Control-Allow-Methods'))
+return mockFetch('https://api.example.com/users', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ name: 'Tom' })
+})
+})
+.then(response => response.json())
+.then(data => console.log('创建用户:', data))
+.catch(error => console.error('错误:', error))
+// ==================== 处理 CORS 错误 ====================
+console.log('\\n--- 处理 CORS 错误 ---')
+async function safeFetch(url: string, options: RequestInit = {}) {
+try {
+const response = await mockFetch(url, options)
+if (response.ok) {
+return await response.json()
+}
+// 处理 CORS 错误
+if (response.status === 0 || response.type === 'opaque') {
+throw new Error('CORS 被阻止')
+}
+throw new Error('请求失败')
+} catch (error) {
+if (error.message === 'CORS 被阻止') {
+console.error('跨域请求被阻止，请检查 CORS 配置')
+}
+throw error
+}
+}
+// 测试 CORS 错误处理
+safeFetch('https://api.example.com/data')
+.then(data => console.log('数据:', data))
+.catch(error => console.error('失败:', error))`
+},

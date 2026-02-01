@@ -1,0 +1,10 @@
+{
+  "title": "Fetch API练习",
+  "description": "使用Fetch API从模拟的API获取用户数据，并显示在页面上。",
+  "starterCode": {
+    "html": "<div id=\"app\">\n  <h1>用户列表</h1>\n  <div id=\"users\"></div>\n</div>",
+    "css": "body {\n  font-family: Arial, sans-serif;\n  max-width: 800px;\n  margin: 0 auto;\n  padding: 20px;\n}\n\n.user-card {\n  border: 1px solid #ddd;\n  border-radius: 4px;\n  padding: 15px;\n  margin-bottom: 15px;\n  background-color: #f9f9f9;\n}\n\n.user-name {\n  font-size: 1.2rem;\n  font-weight: bold;\n  margin-bottom: 5px;\n}\n\n.user-email {\n  color: #666;\n}",
+    "js": "// 模拟API端点\nconst API_URL = 'https://jsonplaceholder.typicode.com/users';\n\n// 使用XMLHttpRequest获取数据\nfunction getUsersWithXHR(callback) {\n  const xhr = new XMLHttpRequest();\n  xhr.open('GET', API_URL, true);\n  xhr.onload = function() {\n    if (xhr.status === 200) {\n      const users = JSON.parse(xhr.responseText);\n      callback(null, users);\n    } else {\n      callback(new Error('Failed to fetch users'));\n    }\n  };\n  xhr.onerror = function() {\n    callback(new Error('Network error'));\n  };\n  xhr.send();\n}\n\n// 显示用户列表\nfunction displayUsers(users) {\n  const usersContainer = document.getElementById('users');\n  usersContainer.innerHTML = '';\n  \n  users.forEach(user => {\n    const userCard = document.createElement('div');\n    userCard.className = 'user-card';\n    userCard.innerHTML = `\n      <div class=\"user-name\">${user.name}</div>\n      <div class=\"user-email\">${user.email}</div>\n    `;\n    usersContainer.appendChild(userCard);\n  });\n}\n\n// 获取并显示用户\ngetUsersWithXHR((error, users) => {\n  if (error) {\n    console.error(error);\n    document.getElementById('users').innerHTML = `<p>Error: ${error.message}</p>`;\n  } else {\n    displayUsers(users);\n  }\n});"
+  },
+  "expectedOutput": "使用Fetch API重构后的代码应该：\n1. 使用fetch()替代XMLHttpRequest\n2. 使用Promise和async/await使代码更加清晰\n3. 包含适当的错误处理\n4. 在页面上显示用户数据\n5. 代码更加现代化和易读\n\nJavaScript应该使用：\n- Fetch API\n- async/await\n- try/catch错误处理\n- DOM操作显示数据\n\nHTML和CSS保持不变，因为这是一个JavaScript练习。"
+}

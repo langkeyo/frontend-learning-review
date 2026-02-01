@@ -1,0 +1,18 @@
+<div class="container">
+<header>
+<h1>响应式设计示例</h1>
+</header>
+<div class="grid">
+<div class="card">卡片 1</div>
+<div class="card">卡片 2</div>
+<div class="card">卡片 3</div>
+<div class="card">卡片 4</div>
+</div>
+<aside class="sidebar">
+<h3>侧边栏</h3>
+<p>这是侧边栏内容。</p>
+</aside>
+<footer>
+<p>&copy; 2024 FrontendMaster</p>
+</footer>
+</div>

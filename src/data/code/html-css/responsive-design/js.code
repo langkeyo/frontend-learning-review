@@ -1,0 +1,118 @@
+// 响应式设计JavaScript
+
+// 菜单切换功能
+const menuToggle = document.querySelector('.menu-toggle');
+const navMenu = document.querySelector('.nav-menu');
+
+menuToggle.addEventListener('click', () => {
+    navMenu.classList.toggle('active');
+});
+
+// 响应式图片处理
+function handleResponsiveImages() {
+    const images = document.querySelectorAll('img');
+
+    images.forEach(img => {
+        // 检查图片是否已经有srcset属性
+        if (!img.hasAttribute('srcset')) {
+            // 为没有srcset的图片添加响应式属性
+            const src = img.getAttribute('src');
+            const width = img.naturalWidth || 300; // 默认宽度
+            const height = img.naturalHeight || 200; // 默认高度
+
+            // 创建不同分辨率的URL（这里使用占位符）
+            const srcset = `${src} ${width}w, ${src}?w=2x ${width * 2}w`;
+            img.setAttribute('srcset', srcset);
+
+            // 添加sizes属性
+            img.setAttribute('sizes', '(max-width: 600px) 100vw, 50vw');
+        }
+    });
+}
+
+// 检测设备类型
+function detectDeviceType() {
+    const userAgent = navigator.userAgent;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    const isTablet = /Tablet|iPad/i.test(userAgent);
+
+    return {
+        isMobile,
+        isTablet,
+        isDesktop: !isMobile && !isTablet
+    };
+}
+
+// 调整布局根据设备类型
+function adjustLayoutForDevice() {
+    const device = detectDeviceType();
+    const flexContainer = document.querySelector('.flex-container');
+    const gridContainer = document.querySelector('.grid-container');
+
+    if (device.isMobile) {
+        // 移动设备优化
+        if (flexContainer) {
+            flexContainer.style.flexDirection = 'column';
+        }
+
+        if (gridContainer) {
+            gridContainer.style.gridTemplateColumns = '1fr';
+        }
+    } else if (device.isTablet) {
+        // 平板优化
+        if (flexContainer) {
+            flexContainer.style.flexDirection = 'row';
+            flexContainer.style.flexWrap = 'wrap';
+        }
+
+        if (gridContainer) {
+            gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        }
+    } else {
+        // 桌面优化
+        if (flexContainer) {
+            flexContainer.style.flexDirection = 'row';
+            flexContainer.style.flexWrap = 'nowrap';
+        }
+
+        if (gridContainer) {
+            gridContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
+        }
+    }
+}
+
+// 页面加载完成后执行
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('响应式设计页面已加载');
+
+    // 初始化响应式功能
+    handleResponsiveImages();
+    adjustLayoutForDevice();
+
+    // 监听窗口大小变化
+    window.addEventListener('resize', () => {
+        adjustLayoutForDevice();
+    });
+
+    // 检查浏览器支持
+    if ('ResizeObserver' in window) {
+        console.log('ResizeObserver 支持可用');
+    }
+
+    if ('IntersectionObserver' in window) {
+        console.log('IntersectionObserver 支持可用');
+    }
+});
+
+// 导出工具函数
+export function getViewportWidth() {
+    return window.innerWidth || document.documentElement.clientWidth;
+}
+
+export function getViewportHeight() {
+    return window.innerHeight || document.documentElement.clientHeight;
+}
+
+// 示例：检测当前视口大小
+console.log('当前视口宽度:', getViewportWidth());
+console.log('当前视口高度:', getViewportHeight());

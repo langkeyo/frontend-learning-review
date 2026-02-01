@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML基础示例</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>HTML基础学习</h1>
+        <nav>
+            <ul>
+                <li><a href="#structure">文档结构</a></li>
+                <li><a href="#elements">常用元素</a></li>
+                <li><a href="#attributes">属性</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="structure">
+            <h2>HTML文档结构</h2>
+            <p>HTML文档通常包含以下基本结构：</p>
+            <pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;页面标题&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;页面内容&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+        </section>
+
+        <section id="elements">
+            <h2>常用HTML元素</h2>
+            <p>HTML提供了丰富的元素来构建网页：</p>
+            <ul>
+                <li>&lt;h1&gt; - &lt;h6&gt;: 标题</li>
+                <li>&lt;p&gt;: 段落</li>
+                <li>&lt;a&gt;: 链接</li>
+                <li>&lt;img&gt;: 图片</li>
+                <li>&lt;div&gt;: 块级容器</li>
+                <li>&lt;span&gt;: 行内容器</li>
+            </ul>
+        </section>
+
+        <section id="attributes">
+            <h2>HTML属性</h2>
+            <p>元素可以通过属性添加额外信息：</p>
+            <pre>&lt;a href="https://example.com" target="_blank"&gt;链接&lt;/a&gt;
+&lt;img src="image.jpg" alt="描述文字"&gt;</pre>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 前端学习平台</p>
+    </footer>
+</body>
+</html>

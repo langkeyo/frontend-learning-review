@@ -1,0 +1,10 @@
+{
+  "title": "箭头函数练习",
+  "description": "使用箭头函数重写以下代码，使其更加简洁和现代化。",
+  "starterCode": {
+    "html": "<div id=\"app\"></div>",
+    "css": "",
+    "js": "function traditionalMap(array, callback) {\n  const result = [];\n  for (let i = 0; i < array.length; i++) {\n    result.push(callback(array[i], i, array));\n  }\n  return result;\n}\n\nfunction traditionalFilter(array, callback) {\n  const result = [];\n  for (let i = 0; i < array.length; i++) {\n    if (callback(array[i], i, array)) {\n      result.push(array[i]);\n    }\n  }\n  return result;\n}\n\nconst numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];\n\nconst doubled = traditionalMap(numbers, function(num) {\n  return num * 2;\n});\n\nconst evens = traditionalFilter(numbers, function(num) {\n  return num % 2 === 0;\n});\n\nconsole.log('原始数组:', numbers);\nconsole.log('加倍数组:', doubled);\nconsole.log('偶数数组:', evens);"
+  },
+  "expectedOutput": "使用箭头函数重写后的代码应该：\n1. 使用箭头函数替代传统函数\n2. 代码更加简洁和易读\n3. 保持相同的功能和输出\n4. 可能使用数组方法如map()和filter()\n\nJavaScript应该使用：\n- 箭头函数语法\n- 数组方法（map、filter等）\n- 可能使用const和let替代var\n- 可能使用解构赋值\n\nHTML和CSS可以是空的，因为这是一个纯JavaScript练习。"
+}

@@ -1,0 +1,78 @@
+// ==================== 数组解构 ====================
+console.log('--- 数组解构 ---')
+// 1. 基础解构
+const colors = ['red', 'green', 'blue']
+const [primary, secondary, tertiary] = colors
+console.log('基础解构:', primary, secondary, tertiary)
+// 2. 跳过元素
+const [first, , third] = colors
+console.log('跳过第二个:', first, third)
+// 3. 剩余元素
+const numbers = [1, 2, 3, 4, 5]
+const [firstNum, ...restNumbers] = numbers
+console.log('第一个和剩余:', firstNum, restNumbers)
+// 4. 默认值
+const [x, y, z = 0] = [1, 2]
+console.log('带默认值:', x, y, z)
+// ==================== 交换变量 ====================
+console.log('\\n--- 交换变量 ---')
+let a = 'A', b = 'B'
+console.log('交换前:', a, b)
+;[a, b] = [b, a]
+console.log('交换后:', a, b)
+// ==================== 对象解构 ====================
+console.log('\\n--- 对象解构 ---')
+const user = {
+id: 1,
+name: 'Tom',
+age: 25,
+email: 'tom@example.com',
+city: 'Beijing'
+}
+// 1. 基础解构
+const { name, age } = user
+console.log('提取:', name, age)
+// 2. 重命名
+const { name: userName, age: userAge } = user
+console.log('重命名:', userName, userAge)
+// 3. 默认值
+const { country = 'China' } = user
+console.log('默认值:', country)
+// 4. 剩余属性
+const { id, email, ...rest } = user
+console.log('剩余属性:', rest)
+// ==================== 嵌套解构 ====================
+console.log('\\n--- 嵌套解构 ---')
+const profile = {
+user: {
+info: {
+name: 'Jerry',
+age: 30
+},
+settings: {
+theme: 'dark',
+notifications: true
+}
+}
+}
+const {
+user: {
+info: { name: profileName, age: profileAge }
+}
+} = profile
+console.log('嵌套提取:', profileName, profileAge)
+// ==================== 函数参数解构 ====================
+console.log('\\n--- 函数参数解构 ---')
+function createUser({ name, age = 18, role = 'user' }) {
+return {
+name,
+age,
+role,
+createdAt: new Date().toISOString()
+}
+}
+const user1 = createUser({ name: 'Alice' })
+console.log('默认参数:', user1)
+const user2 = createUser({ name: 'Bob', age: 25, role: 'admin' })
+console.log('指定参数:', user2)`
+},

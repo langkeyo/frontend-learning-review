@@ -1,0 +1,57 @@
+// ==================== 基础语法 ====================
+// 1. 简单箭头函数
+const add = (a, b) => a + b
+console.log('2 + 3 =', add(2, 3))
+// 2. 单参数省略括号
+const square = x => x * x
+console.log('5 的平方 =', square(5))
+// 3. 无参数
+const getTimestamp = () => Date.now()
+console.log('当前时间戳 =', getTimestamp())
+// 4. 多行需要花括号
+const calculateArea = (width, height) => {
+const area = width * height
+return area
+}
+console.log('矩形面积 =', calculateArea(5, 3))
+// ==================== 数组方法 ====================
+const numbers = [1, 2, 3, 4, 5]
+// filter 过滤
+const evens = numbers.filter(n => n % 2 === 0)
+console.log('偶数:', evens)
+// map 映射
+const doubled = numbers.map(n => n * 2)
+console.log('翻倍:', doubled)
+// reduce 归约
+const sum = numbers.reduce((acc, n) => acc + n, 0)
+console.log('求和:', sum)
+// ==================== this 绑定 ====================
+const obj = {
+value: 42,
+getValue: function() {
+console.log('普通函数 this.value =', this.value)
+},
+getArrowValue: () => {
+console.log('箭头函数 this =', this)
+console.log('箭头函数 this.value =', this?.value)
+}
+}
+obj.getValue()      // 42
+obj.getArrowValue()  // undefined（严格模式下）或 window（非严格模式）
+// ==================== 使用场景 ====================
+// 模拟一个组件类
+class Counter {
+constructor() {
+this.count = 0
+}
+// 使用箭头函数作为方法
+increment = () => {
+this.count++
+console.log('计数:', this.count)
+}
+}
+const counter = new Counter()
+counter.increment()
+counter.increment()
+counter.increment()`
+},
